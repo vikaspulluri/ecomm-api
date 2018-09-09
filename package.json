@@ -1,0 +1,21 @@
+{
+  "name": "e-commerce-api",
+  "version": "1.0.0",
+  "description": "Simple ecommerce apis",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm run start:server",
+    "start": "nodemon server.js"
+  },
+  "author": "vikas pulluri",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "debug": "^3.1.0",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.13"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}

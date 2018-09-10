@@ -6,7 +6,6 @@ const userSchema = mongoose.Schema({
     lastName: {type: String, required: true, trim: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
-    dateOfBirth: {type: Date, required: true, default: Date.now},
     createdDate: {type: Date, default: Date.now, required: false},
     hasAdminPrevilieges: {type: Boolean, default: false},
     orders: {type: Array, default: []},
@@ -20,7 +19,7 @@ const userSchema = mongoose.Schema({
     }
 });
 
-userSchema.plugin(uniqueValidator);
+userSchema.plugin(uniqueValidator, { message: 'Error, expected {VALUE} to be unique.' });
 
 module.exports = mongoose.model('User', userSchema);
 

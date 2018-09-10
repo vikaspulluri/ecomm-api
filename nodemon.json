@@ -1,0 +1,7 @@
+{
+    "env": {
+      "MONGO_ATLAS_PW": "XXP6uiKphJ3Mnef",
+      "JWT_KEY": "kaushal_army"
+    }
+}
+  

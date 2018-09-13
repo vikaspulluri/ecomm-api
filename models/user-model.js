@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = mongoose.Schema({
     firstName: {type: String, required: true, trim: true},
@@ -19,7 +18,7 @@ const userSchema = mongoose.Schema({
     }
 });
 
-userSchema.plugin(uniqueValidator, { message: 'Error, expected {VALUE} to be unique.' });
+userSchema.index({email: 1});
 
 module.exports = mongoose.model('User', userSchema);
 

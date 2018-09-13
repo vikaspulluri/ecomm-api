@@ -4,16 +4,18 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 
 const app = express();
-mongoose.connect('mongodb+srv://vikas:' + process.env.MONGO_ATLAS_PW +'@cluster0-ppqhq.mongodb.net/e-comm?retryWrites=true')
+mongoose.connect('mongodb+srv://vikas:' + process.env.MONGO_ATLAS_PW +'@cluster0-ppqhq.mongodb.net/e-comm?retryWrites=true', { autoIndex: false, useNewUrlParser: true })
         .then(() => {
           console.log('successfully connected to mongodb!!!');
         })
-        .catch(() => {
+        .catch((err) => {
           console.log('connection to mongodb failed!!!');
         });
 
 //routes
 const userRoutes = require('./routes/user-routes');
+const categoryRoutes = require('./routes/category-routes');
+const productRoutes = require('./routes/product-routes');
 
 app.use(helmet());
 
@@ -28,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/user', userRoutes);
-
-
+app.use('/api/category', categoryRoutes);
+app.use('/api/product', productRoutes);
 
 module.exports = app;

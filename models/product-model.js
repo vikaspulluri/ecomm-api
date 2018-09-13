@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 
 const productSchema = mongoose.Schema({
     name: {type: String, required: true},
-    sku: {type: String, unique: true},
+    sku: {type: Number, unique: true},
     slugname: {type: String},
     price: {
         originalPrice: {type: Number, required: true},
@@ -23,5 +24,11 @@ const productSchema = mongoose.Schema({
 });
 
 productSchema.index({sku: 1});
+productSchema.plugin(autoIncrement.plugin, {
+    model: 'Product',
+    field: 'sku',
+    startAt: 100,
+    incrementBy: 1
+})
 
 module.exports = mongoose.model('Product', productSchema);

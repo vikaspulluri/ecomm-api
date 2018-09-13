@@ -2,18 +2,6 @@ const Product = require('../models/product-model');
 const Category = require('../models/category-model');
 const responseObj = require('../libraries/response');
 
-exports.createSKU = (req, res, next) => {
-    Product.countDocuments()
-            .exec()
-            .then(result => {
-                let count = result + 1;
-                req.body.sku = 'PS' + count;
-                return next();
-            })
-            .catch(err => {
-                res.status(500).send('Something went wrong')
-            })
-}
 
 exports.getCategoryId = (req, res, next) => {
     Category.findOne({slugname: req.body.category})
@@ -58,7 +46,6 @@ exports.addProduct = (req, res, next) => {
     const body = {
         name: req.body.name,
         description: req.body.description,
-        sku: req.body.sku,
         slugname: slugname,
         createdDate: new Date().toLocaleString(),
         category: req.categoryId,

@@ -21,6 +21,7 @@ const userRoutes = require('./routes/user-routes');
 const categoryRoutes = require('./routes/category-routes');
 const productRoutes = require('./routes/product-routes');
 const inventoryRoutes = require('./routes/inventory-routes');
+const cartRoutes = require('./routes/cart-routes');
 
 app.use(helmet());
 
@@ -38,6 +39,6 @@ app.use('/api/user', userRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
-
+app.use('/api/cart', cartRoutes);
 
 module.exports = app;

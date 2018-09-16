@@ -1,23 +1,10 @@
-const respondOk = (error, statusCode, message, data) => {
-    return {
-        error: false,
-        message: message,
-        statusCode: statusCode,
-        data: data
+module.exports = class Response {
+    constructor(builder) {
+        this.error = builder.error;
+        this.message = builder.message;
+        this.statusCode = builder.status;
+        this.data = builder.data;
+        this.errorCode = builder.errorCode;
+        this.errorType = builder.errorType;
     }
-}
-
-const respondError = (error, message, statusCode, errCode, data) => {
-    return {
-        error: error,
-        message: message,
-        statusCode: statusCode,
-        errorCode: errCode,
-        data: data
-    }
-}
-
-module.exports = {
-    respondOk: respondOk,
-    respondError: respondError
 }

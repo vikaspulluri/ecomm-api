@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
+const shortId = require('shortid');
 
 const productSchema = mongoose.Schema({
+    _id: {type: String, required: true},
     name: {type: String, required: true},
     sku: {type: Number, unique: true},
     slugname: {type: String},

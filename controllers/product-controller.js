@@ -1,7 +1,7 @@
 const Product = require('../models/product-model');
 const Category = require('../models/category-model');
-const responseObj = require('../libraries/response');
-
+const ResponseBuilder = require('../libraries/response');
+const shortId = require('shortid');
 
 exports.getCategoryId = (req, res, next) => {
     Category.findOne({slugname: req.body.category})
@@ -11,39 +11,47 @@ exports.getCategoryId = (req, res, next) => {
                     req.categoryId = result._id;
                     return next();
                 }
-                let jsonResponse = responseObj.respondError(true, 'Provided category not found', 404, 'dataValidationError');
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Provided Category Not Found')
+                                        .status(404)
+                                        .errorType('dataValidationError')
+                                        .errorCode('PC-GCI-1')
+                                        .build();
                 return res.status(404).send(jsonResponse);
             })
             .catch(err => {
-                let jsonResponse = responseObj.respondError(true, 'Unknown error', 500, 'dataValidationError');
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-GCI-2')
+                                        .build();
                 return res.status(500).send(jsonResponse);
             })
 }
 
-exports.getProducts = (req, res, next) => {
-    Product.find()
-            .populate('category')
-            .exec()
-            .then(result => {
-                let response = result || [];
-                return res.status(200).send(response);
-            })
-            .catch(err => {
-                return res.status(500).send(err)
-            })
-}
-
-exports.addProduct = (req, res, next) => {
+exports.createProduct = (req, res, next) => {
     if(!req.userData) {
-        let jsonResponse = responseObj.respondError(true, 'Authentication failed', 401, 'OAuthError');
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Authentication Failed')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('PC-CP-1')
+                                        .build();
         return res.status(401).send(jsonResponse);
     }
     if(!req.userData.isAdmin){
-        let jsonResponse = responseObj.respondError(true, 'You need admin previleges to create/modify a product', 401, 'OAuthError');
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('You need admin previleges to create/modify a product')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('PC-CP-2')
+                                        .build();
         return res.status(401).send(jsonResponse);
     }
     const slugname = req.body.name.toString().toLowerCase().split(' ').join('-');
     const body = {
+        _id: shortId.generate(),
         name: req.body.name,
         description: req.body.description,
         slugname: slugname,
@@ -66,56 +74,127 @@ exports.addProduct = (req, res, next) => {
     const product = new Product(body);
     product.save()
             .then(result => {
-                return res.status(201).send(result);
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Successfully Created')
+                                        .status(201)
+                                        .data(result)
+                                        .build();
+                return res.status(201).send(jsonResponse);
             })
             .catch(err => {
-                return res.status(500).send(err)
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-CP-3')
+                                        .build();
+                return res.status(500).send(jsonResponse)
             })
 }
 
-exports.getProductById = (req, res, next) => {
-    Product.findById(req.params.id)
+exports.getProducts = (req, res, next) => {
+    Product.find()
             .populate('category')
             .exec()
             .then(result => {
-                return res.status(200).send(result)
+                let response = result || [];
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Successfully Fetched')
+                                        .status(200)
+                                        .data(response)
+                                        .build();
+                return res.status(200).send(jsonResponse);
             })
             .catch(err => {
-                return res.status(500).json({
-                    error: true,
-                    message: err.message,
-                    name: err.name
-                })
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-GP-1')
+                                        .build();
+                return res.status(500).send(jsonResponse)
+            })
+}
+
+
+exports.getProductById = (req, res, next) => {
+    Product.findOne({_id: req.params.id})
+            .populate('category')
+            .exec()
+            .then(result => {
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Successfully Fetched')
+                                        .status(200)
+                                        .data(result)
+                                        .build();
+                return res.status(200).send(jsonResponse)
+            })
+            .catch(err => {
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-GPBI-1')
+                                        .build();
+                return res.status(500).send(jsonResponse)
             })
 }
 
 exports.checkProductExistence = (req, res, next) => {
+    if(!req.userData) {
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Authentication Failed')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('PC-CPE-1')
+                                        .build();
+        return res.status(401).send(jsonResponse);
+    }
+    if(!req.userData.isAdmin){
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('You need admin previleges to create/modify a product')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('PC-CPE-2')
+                                        .build();
+        return res.status(401).send(jsonResponse);
+    }
     const id = req.params.id;
     if(!id) {
-        return res.status(400).send('A valid id must be supplied to edit a product')
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('A Valid Id Must Be Supplied To Edit A Product')
+                                        .status(400)
+                                        .errorType('dataValidationError')
+                                        .errorCode('PC-CPE-3')
+                                        .build();
+        return res.status(400).send(jsonResponse)
     }
     Product.countDocuments({_id: req.params.id})
             .exec()
             .then(result => {
                 if(result <= 0) {
-                    return res.status(404).send('No product found with the requested id')
+                    let jsonResponse = ResponseBuilder.error(true)
+                                        .message('No Product Found With The Requested Id')
+                                        .status(404)
+                                        .errorType('DataMissingError')
+                                        .errorCode('PC-CPE-4')
+                                        .build();
+                    return res.status(404).send(jsonResponse)
                 }
                 next();
             })
             .catch(err => {
-                res.status(500).send(err);
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-CPE-5')
+                                        .build();
+                res.status(500).send(jsonResponse);
             })
 }
 
 exports.updateProduct = (req, res, next) => {
-    if(!req.userData) {
-        let jsonResponse = responseObj.respondError(true, 'Authentication failed', 401, 'OAuthError');
-        return res.status(401).send(jsonResponse);
-    }
-    if(!req.userData.isAdmin){
-        let jsonResponse = responseObj.respondError(true, 'You need admin previleges to create/modify a category', 401, 'OAuthError');
-        return res.status(401).send(jsonResponse);
-    }
     const body = {
         name: req.body.name,
         description: req.body.description,
@@ -135,31 +214,44 @@ exports.updateProduct = (req, res, next) => {
             dimensions: req.body.meta.dimensions
         }
     } 
-    Product.findByIdAndUpdate({_id: req.params.id}, body, {new: true})
+    Product.updateOne({_id: req.params.id}, body, {new: true})
             .populate('category')
             .exec()
             .then(result => {
-                return res.status(200).send(result);
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Successfully Updated')
+                                        .status(200)
+                                        .data(result)
+                                        .build();
+                return res.status(200).send(jsonResponse);
             })
             .catch(err => {
-                return res.status(500).send(err)
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-UP-3')
+                                        .build();
+                return res.status(500).send(jsonResponse)
             })
 }
 
 exports.deleteProduct = (req, res, next) => {
-    if(!req.userData) {
-        let jsonResponse = responseObj.respondError(true, 'Authentication failed', 401, 'OAuthError');
-        return res.status(401).send(jsonResponse);
-    }
-    if(!req.userData.isAdmin){
-        let jsonResponse = responseObj.respondError(true, 'You need admin previleges to create/modify a category', 401, 'OAuthError');
-        return res.status(401).send(jsonResponse);
-    }
     Product.deleteOne({_id: req.params.id})
             .then(result => {
-                return res.status(200).send('Successfully deleted');
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Successfully Deleted')
+                                        .status(200)
+                                        .build();
+                return res.status(200).send(jsonResponse);
             })
             .catch(err => {
-                return res.status(500).send('Unable to delete the product')
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Something went wrong, please try again later...')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('PC-DP-3')
+                                        .build();
+                return res.status(500).send(jsonResponse)
             })
 }

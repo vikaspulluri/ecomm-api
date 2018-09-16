@@ -19,7 +19,8 @@
     "loglevel": "^1.6.1",
     "mongoose": "^5.2.13",
     "mongoose-auto-increment": "^5.0.1",
-    "mongoose-unique-validator": "^2.0.1"
+    "mongoose-unique-validator": "^2.0.1",
+    "shortid": "^2.2.13"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"

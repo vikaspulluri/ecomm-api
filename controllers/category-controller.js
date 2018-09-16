@@ -1,14 +1,24 @@
-const responseObj = require('../libraries/response');
+const ResponseBuilder = require('../libraries/response');
 const Category = require('../models/category-model');
 
 exports.checkCategoryExistence = function(options){
     return (req, res, next) => {
         if(!req.userData) {
-            let jsonResponse = responseObj.respondError(true, 'Authentication failed', 401, 'OAuthError');
+            let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Authentication Failed')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('CTC-CGE-1')
+                                        .build();
             return res.status(401).send(jsonResponse);
         }
         if(!req.userData.isAdmin){
-            let jsonResponse = responseObj.respondError(true, 'You need admin previleges to create/modify a category', 401, 'OAuthError');
+            let jsonResponse = ResponseBuilder.error(true)
+                                        .message('You need admin previleges to create/modify a category')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('CTC-CGE-2')
+                                        .build();
             return res.status(401).send(jsonResponse);
         }
         let slugname = req.body.name.toString().toLowerCase().split(' ').join('-');
@@ -18,18 +28,33 @@ exports.checkCategoryExistence = function(options){
         Category.countDocuments({slugname: slugname}).exec()
             .then(result => {
                 if(result > 0 && options === 'create') {
-                    let jsonResponse = responseObj.respondError(true, 'A category already exists with the given name. Use the existing one or create different one', 401, 'dataValidationError');
+                    let jsonResponse = ResponseBuilder.error(true)
+                                        .message('A category already exists with the given name. Use the existing one or create different one')
+                                        .status(401)
+                                        .errorType('dataValidationError')
+                                        .errorCode('CTC-CGE-3')
+                                        .build();
                     return res.status(401).send(jsonResponse);
                 } if(result <= 0 && options === 'edit') {
-                    let jsonResponse = responseObj.respondError(true, 'No Category present with the provided slugname', 401, 'dataValidationError');
+                    let jsonResponse = ResponseBuilder.error(true)
+                                        .message('No Category present with the provided slugname')
+                                        .status(401)
+                                        .errorType('dataValidationError')
+                                        .errorCode('CTC-CGE-4')
+                                        .build();
                     return res.status(401).send(jsonResponse);
                 }
                 req.slugname = slugname;
                 next();
             })
             .catch(err => {
-                let jsonResponse = responseObj.respondError(true, 'An error occured during checking the document', 500, 'OAuthError');
-                return res.status(401).send(jsonResponse);
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('An Unknown Error Occured')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('CTC-CGE-5')
+                                        .build();
+                return res.status(500).send(jsonResponse);
             })
     }
 }
@@ -48,15 +73,26 @@ exports.checkParentCategoryValidity = function(options){
                         req.parentCategory = document._id;
                         return next();
                     }
-                    let jsonResponse = responseObj.respondError(true, 'Parent category not found', 500, 'OAuthError');
+                    let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Provided Parent Category Not Found')
+                                        .status(401)
+                                        .errorType('dataValidationError')
+                                        .errorCode('CTC-CPCV-1')
+                                        .build();
                     return res.status(401).send(jsonResponse);
                 })
                 .catch(err => {
-                    let jsonResponse = responseObj.respondError(true, 'An error occured during checking the document', 500, 'OAuthError');
+                    let jsonResponse = ResponseBuilder.error(true)
+                                        .message('An Unknown Error Occured')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('CTC-CPCV-2')
+                                        .build();
                     return res.status(401).send(jsonResponse);
                 })
     }
 }
+
 exports.createCategory = (req, res, next) => {
     let categoryObj = {
         name: req.body.name,
@@ -83,11 +119,20 @@ exports.createCategory = (req, res, next) => {
                         id: result.parentCategory
                     }
                 }
-                let jsonResponse = responseObj.respondOk(false, 'Category successfully created!!!', 201, data);
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Category Successfully Created!!!')
+                                        .status(201)
+                                        .data(data)
+                                        .build();
                 return res.status(201).send(jsonResponse);
             })
             .catch(err => {
-                let jsonResponse = responseObj.respondError(true, 'An error occured during creating the category', 500, 'OAuthError');
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('An Unknown Error Occured')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('CTC-CC-1')
+                                        .build();
                 return res.status(500).send(jsonResponse);
             })
 }
@@ -96,8 +141,23 @@ exports.getCategories = (req, res, next) => {
     Category.find()
             .populate('parentCategory')
             .exec()
-            .then(result => res.status(200).send(result))
-            .catch(error => res.status(500).send('unknown error'))
+            .then(result =>{
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Successfully Fetched!!!')
+                                        .status(200)
+                                        .data(result)
+                                        .build();
+                return res.status(200).send(jsonResponse);
+            })
+            .catch(error => {
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('An Unknown Error Occured')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('CTC-GC-1')
+                                        .build();
+                res.status(500).send(jsonResponse);
+            })
 }
 
 exports.editCategory = (req,res, next) => {
@@ -117,30 +177,67 @@ exports.editCategory = (req,res, next) => {
                 {new: true}
             )
             .then(result => {
-                return res.status(200).send(result);
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Category Successfully Updated!!!')
+                                        .status(200)
+                                        .data(result)
+                                        .build();
+                return res.status(200).send(jsonResponse);
             })
             .catch(err => {
-                return res.status(500).send(err);
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('An Unknown Error Occured')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('CTC-EC-1')
+                                        .build();
+                return res.status(500).send(jsonResponse);
             })
 }
 
 exports.deleteCategory = (req, res, next) => {
     if(!req.userData) {
-        let jsonResponse = responseObj.respondError(true, 'Authentication failed', 401, 'OAuthError');
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Authentication Failed')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('CTC-DC-1')
+                                        .build();
         return res.status(401).send(jsonResponse);
     }
     if(!req.userData.isAdmin){
-        let jsonResponse = responseObj.respondError(true, 'You need admin previleges to create/modify a category', 401, 'OAuthError');
+        let jsonResponse = ResponseBuilder.error(true)
+                                        .message('You Need Admin Previleges to create/modify a category')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('CTC-DC-2')
+                                        .build();
         return res.status(401).send(jsonResponse);
     }
     Category.deleteOne({slugname: req.params.slugname})
             .then(result => {
                 if(result.n <= 0) {
-                    return res.status(404).send('Category not found');
+                    let jsonResponse = ResponseBuilder.error(true)
+                                        .message('Provided Category Not Found to Delete')
+                                        .status(404)
+                                        .errorType('dataValidationError')
+                                        .errorCode('CTC-DC-3')
+                                        .build();
+                    return res.status(404).send(jsonResponse);
                 }
-                return res.status(200).send('Successfully deleted');
+                let jsonResponse = ResponseBuilder.error(false)
+                                        .message('Category Successfully Deleted!!!')
+                                        .status(200)
+                                        .build();
+                return res.status(200).send(jsonResponse);
             })
             .catch(err => {
-                return res.status(500).send('Unable to delete the category')
+                let jsonResponse = ResponseBuilder.error(true)
+                                        .message('An Unknown Error Occured')
+                                        .status(500)
+                                        .errorType('UnknownError')
+                                        .errorCode('CTC-DC-4')
+                                        .build();
+                return res.status(500).send(jsonResponse);
             })
 }

@@ -9,5 +9,5 @@ const users = require('../models/user-model');
 router.post('/create', uniqueValidator(users,'email'), userController.createUser);
 router.post('/login', userController.loginUser);
 router.post('/@self', checkAuth, userController.getUser);
-router.post('/cart-info', checkAuth, userController.getCartInfo);
+
 module.exports = router;

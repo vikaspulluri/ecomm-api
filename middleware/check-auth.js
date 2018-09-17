@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-let responseObj = require('../libraries/response');
+let ResponseBuilder = require('../libraries/response-builder');
 
 module.exports = (req, res, next) => {
   try{
@@ -8,7 +8,12 @@ module.exports = (req, res, next) => {
     req.userData = {email: decodedToken.email, userId: decodedToken.id, isAdmin: decodedToken.isAdmin};
     next();
   } catch(error) {
-    let jsonResponse = responseObj.respondError(true, 'Authentication failed', 401, 'OAuthError');
+    let jsonResponse = new ResponseBuilder().error(true)
+                                        .message('Authentication Failed')
+                                        .status(401)
+                                        .errorType('OAuthError')
+                                        .errorCode('CA-1')
+                                        .build();
     return res.status(401).send(jsonResponse);
   }
 }

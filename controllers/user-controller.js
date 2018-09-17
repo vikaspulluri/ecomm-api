@@ -3,9 +3,10 @@ const bcrypt = require('bcryptjs');
 const ResponseBuilder = require('../libraries/response-builder');
 const jwt = require('jsonwebtoken');
 
+
 exports.createUser = (req, res, next) => {
     if(!req.body.password){
-        let response = ResponseBuilder.error(true)
+        let response = new ResponseBuilder().error(true)
                                         .message('Invalid request')
                                         .status(400)
                                         .errorType('dataValidationError')
@@ -43,7 +44,7 @@ exports.createUser = (req, res, next) => {
                         phone: result.phone,
                         address: result.address
                     };
-                    let response = ResponseBuilder.error(false)
+                    let response = new ResponseBuilder().error(false)
                                         .message('User created successfully!!!')
                                         .status(201)
                                         .data(data)
@@ -51,10 +52,10 @@ exports.createUser = (req, res, next) => {
                     return res.status(201).send(response);
                 })
                 .catch(error => {
-                    let jsonResponse = ResponseBuilder.error(true)
+                    let jsonResponse = new ResponseBuilder().error(true)
                                         .message('Something went wrong, please try again later...')
                                         .status(500)
-                                        .errorType('dataValidationError')
+                                        .errorType('UnknwonError')
                                         .errorCode('UC-CU-2')
                                         .build();
                     return res.status(500).send(jsonResponse);
@@ -67,7 +68,7 @@ exports.loginUser = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
           if(!user) {
-            let jsonResponse = ResponseBuilder.error(true)
+            let jsonResponse = new ResponseBuilder().error(true)
                                         .message('Invalid username provided')
                                         .status(401)
                                         .errorType('OAuthError')
@@ -80,7 +81,7 @@ exports.loginUser = (req, res, next) => {
         })
         .then(result => {
             if(!result){
-                let jsonResponse = ResponseBuilder.error(true)
+                let jsonResponse = new ResponseBuilder().error(true)
                                         .message('Invalid Authentication Credentials')
                                         .status(401)
                                         .errorType('OAuthError')
@@ -95,7 +96,7 @@ exports.loginUser = (req, res, next) => {
                 username: fetchedUser.firstName + ' ' + fetchedUser.lastName,
                 userId: fetchedUser._id
             };
-            let jsonResponse = ResponseBuilder.error(false)
+            let jsonResponse = new ResponseBuilder().error(false)
                                         .message('User Logged In Successfully...')
                                         .status(200)
                                         .data(data)
@@ -103,7 +104,7 @@ exports.loginUser = (req, res, next) => {
             return res.status(200).send(jsonResponse);
         })
         .catch(err => {
-            let jsonResponse = ResponseBuilder.error(true)
+            let jsonResponse = new ResponseBuilder().error(true)
                                         .message('Authentication Failed')
                                         .status(500)
                                         .errorType('OAuthError')
@@ -115,7 +116,7 @@ exports.loginUser = (req, res, next) => {
 
 exports.getUser = (req, res, next) => {
     if(!req.userData) {
-        let jsonResponse = ResponseBuilder.error(true)
+        let jsonResponse = new ResponseBuilder().error(true)
                                         .message('Authentication Failed')
                                         .status(401)
                                         .errorType('OAuthError')
@@ -127,6 +128,7 @@ exports.getUser = (req, res, next) => {
         .exec()
         .then(result => {
             let data = {
+                userId: result._id,
                 firstName: result.firstName,
                 lastName: result.lastName,
                 email: result.email,
@@ -135,7 +137,7 @@ exports.getUser = (req, res, next) => {
                 address: result.address,
                 orders: result.orders
             }
-            let jsonResponse = ResponseBuilder.error(false)
+            let jsonResponse = new ResponseBuilder().error(false)
                                         .message('User Data Fetched Successfully!!!')
                                         .status(200)
                                         .data(data)
@@ -143,7 +145,7 @@ exports.getUser = (req, res, next) => {
             res.status(200).send(jsonResponse);
         })
         .catch(error => {
-            let jsonResponse = ResponseBuilder.error(true)
+            let jsonResponse = new ResponseBuilder().error(true)
                                         .message('Something went wrong, please try again later...')
                                         .status(500)
                                         .errorType('UnknownError')

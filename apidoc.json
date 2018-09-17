@@ -1,0 +1,12 @@
+{
+    "name": "E-Commerce API",
+    "version": "1.0.0",
+    "description": "E-Commerce API Documentation",
+    "title": "E-Commerce API",
+    "url" : "",
+    "author": "Vikas Pulluri",
+    "created": "17-09-2018",
+    "template": {
+      "forceLanguage": "en"
+    }
+}

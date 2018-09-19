@@ -160,4 +160,5 @@ router.post('/login', userController.loginUser);
  */
 router.get('/@self', checkAuth, userController.getUser);
 
+
 module.exports = router;

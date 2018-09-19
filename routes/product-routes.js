@@ -71,7 +71,7 @@ const productController = require('../controllers/product-controller');
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-3
- *    HTTP/1.1 400 BAD REQUEST
+ *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
  *      "message": "Something went wrong, please try again later...",

@@ -7,7 +7,7 @@ exports.checkProductExistenceInStock = function(options){
         if(!req.userData) {
             let jsonResponse = ResponseBuilder.error(true)
                                         .message('Unauthorized Access')
-                                        .status(400)
+                                        .status(401)
                                         .errorType('OAuthError')
                                         .errorCode('IC-CPEIS-1')
                                         .build();
@@ -16,20 +16,22 @@ exports.checkProductExistenceInStock = function(options){
         if(!req.userData.isAdmin) {
             let jsonResponse = ResponseBuilder.error(true)
                                         .message('You need Admin previliges to perform this operation')
-                                        .status(400)
+                                        .status(401)
                                         .errorType('OAuthError')
                                         .errorCode('IC-CPEIS-2')
                                         .build();
             return res.status(401).send(jsonResponse);
         }
-        Inventory.countDocuments({product: req.body.productId})
+        let productId;
+        productId = options === 'add' ? req.body.product : req.params.id;
+        Inventory.countDocuments({product: productId})
                 .exec()
                 .then(result => {
                     if(result > 0 && options === 'add') {
                         let jsonResponse = ResponseBuilder.error(true)
                                         .message('Product Already Exists In Inventory. Update It Instead Of Adding Again!!!')
                                         .status(400)
-                                        .errorType('dataEsistanceError')
+                                        .errorType('dataExistanceError')
                                         .errorCode('IC-CPEIS-3')
                                         .build();
                         return res.status(400).send(jsonResponse);
@@ -47,7 +49,7 @@ exports.checkProductExistenceInStock = function(options){
                 })
                 .catch(err => {
                     let jsonResponse = ResponseBuilder.error(true)
-                                        .message('An Unknown Error Occured')
+                                        .message('Something went wrong, please try again later...')
                                         .status(500)
                                         .errorType('UnknownError')
                                         .errorCode('IC-CPEIS-5')
@@ -89,13 +91,13 @@ exports.addItemToInventory = (req, res, next) => {
 
 exports.updateInventoryById = (req, res, next) => {
     const updatedObj = {
-        product: req.body.productId,
+        product: req.params.id,
         availableStock: req.body.availableStock,
         inventoryStatus: req.body.inventoryStatus,
         lastModifiedOn: new Date().toLocaleString(),
         lastModifiedBy: req.userData.userId
     };
-    Inventory.updateOne({product: req.body.productId},updatedObj,{new: true})
+    Inventory.updateOne({product: req.params.id},updatedObj,{new: true})
             .exec()
             .then(result => {
                 if(result.n > 0) {
@@ -103,7 +105,7 @@ exports.updateInventoryById = (req, res, next) => {
                                         .message('Successfully Updated!!!')
                                         .status(200)
                                         .build();
-                    return res.status(201).send(jsonResponse);
+                    return res.status(200).send(jsonResponse);
                 }
                 let jsonResponse = ResponseBuilder.error(true)
                                         .message('Unable to Update the Inventory')
@@ -125,6 +127,24 @@ exports.updateInventoryById = (req, res, next) => {
 }
 
 exports.deleteInventoryById = (req, res, next) => {
+    if(!req.userData) {
+        let jsonResponse = ResponseBuilder.error(true)
+                                    .message('Unauthorized Access')
+                                    .status(401)
+                                    .errorType('OAuthError')
+                                    .errorCode('IC-DIBI-1')
+                                    .build();
+        return res.status(401).send(jsonResponse);
+    }
+    if(!req.userData.isAdmin) {
+        let jsonResponse = ResponseBuilder.error(true)
+                                    .message('You need Admin previliges to perform this operation')
+                                    .status(401)
+                                    .errorType('OAuthError')
+                                    .errorCode('IC-DIBI-2')
+                                    .build();
+        return res.status(401).send(jsonResponse);
+    }
     Inventory.deleteOne({product: req.params.id})
             .exec()
             .then(result => {
@@ -133,7 +153,7 @@ exports.deleteInventoryById = (req, res, next) => {
                                         .message('No Stock Found With Provided Id')
                                         .status(404)
                                         .errorType('DataMissingError')
-                                        .errorCode('IC-DIBI-1')
+                                        .errorCode('IC-DIBI-4')
                                         .build();
                     return res.status(404).send(jsonResponse);    
                 }
@@ -148,7 +168,7 @@ exports.deleteInventoryById = (req, res, next) => {
                                         .message('An Unknown Error Occured')
                                         .status(500)
                                         .errorType('UnknownError')
-                                        .errorCode('IC-DIBI-2')
+                                        .errorCode('IC-DIBI-5')
                                         .build();
                 return res.status(500).send(jsonResponse)
             })
@@ -168,7 +188,7 @@ exports.getAllInventory = (req, res, next) => {
             })
             .catch(err => {
                 let jsonResponse = ResponseBuilder.error(true)
-                                        .message('An Unknwon Error Occured')
+                                        .message('Something went wrong, please try again later...')
                                         .status(500)
                                         .errorType('UnknownError')
                                         .errorCode('IC-GAI-1')
@@ -199,7 +219,7 @@ exports.getInventoryById = (req, res, next) => {
             })
             .catch(err => {
                 let jsonResponse = ResponseBuilder.error(true)
-                                        .message('An Unknwon Error Occured')
+                                        .message('Something went wrong, please try again later...')
                                         .status(500)
                                         .errorType('UnknwonError')
                                         .errorCode('IC-GIBI-2')

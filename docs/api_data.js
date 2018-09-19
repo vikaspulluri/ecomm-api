@@ -324,6 +324,271 @@ define({ "api": [
   {
     "version": "1.0.0",
     "type": "post",
+    "url": "/api/inventory/add",
+    "title": "Add a product to Inventory",
+    "name": "addProduct",
+    "group": "Inventory",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Authorization Token prepended with (Bearer )</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "product",
+            "description": "<p>Product Id (Id generated while creating the product)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "availableStock",
+            "description": "<p>Stock availability for the product</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "inventoryStatus",
+            "description": "<p>Inventory Status (active or inactive)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 201 Created\n{\n  \"error\": false,\n  \"message\": \"Successfully Added to Inventory\",\n  \"data\": {\n      \"_id\": \"9jK8YXA5n\",\n      \"name\": \"Adidas Casual Walking\",\n      \"slugname\": \"adidas-casual-walking\",\n      \"sku\": 108,\n      \"description\": \"Adidas Casual Walking Sandals\",\n      \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n      \"category\": \"5b99579666f6360394aee7d6\",\n      \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n      \"price\": {\n          \"originalPrice\" : 1500,\n          \"offerPrice\": 1500,\n          \"currency\": \"INR\"\n       },\n      \"meta\": {\n          \"color\" : \"black\",\n          \"dimensions\": \"42 CM\",\n          \"madeIn\": \"India\"\n       },\n      \"__v\": 0\n   }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"IC-CPEIS-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Product Already Exists In Inventory. Update It Instead Of Adding Again!!!\",\n  \"errorCode\": \"IC-CPEIS-3\",\n  \"errorType\": \"dataExistanceError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"IC-CPEIS-5\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/inventory-routes.js",
+    "groupTitle": "Inventory"
+  },
+  {
+    "version": "1.0.0",
+    "type": "delete",
+    "url": "/api/inventory/delete/:id",
+    "title": "Delete a Product from Inventory",
+    "name": "deleteProductFromInventory",
+    "group": "Inventory",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Authorization Token prepended with (Bearer )</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Deleted!!!\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-DIBI-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"IC-DIBI-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Id Provided\",\n  \"errorCode\": \"VIP-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Stock Found With Provided Id\",\n  \"errorCode\": \"IC-DIBI-4\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"IC-DIBI-5\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/inventory-routes.js",
+    "groupTitle": "Inventory"
+  },
+  {
+    "version": "1.0.0",
+    "type": "put",
+    "url": "/api/product/edit/:id",
+    "title": "Edit a product by its ID",
+    "name": "editInventoryItem",
+    "group": "Inventory",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Authorization Token prepended with (Bearer )</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "product",
+            "description": "<p>Product Id (Id generated while creating the product)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "availableStock",
+            "description": "<p>Stock availability for the product</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "inventoryStatus",
+            "description": "<p>Inventory Status (active or inactive)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Updated!!!\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"IC-CPEIS-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Id Provided\",\n  \"errorCode\": \"VIP-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Product Does Not Exist In Inventory. Add It Before Updating It\",\n  \"errorCode\": \"IC-CPEIS-4\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-5",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Unable to Update the Inventory\",\n  \"errorCode\": \"IC-UIBI-1\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-5",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"IC-UIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/inventory-routes.js",
+    "groupTitle": "Inventory"
+  },
+  {
+    "version": "1.0.0",
+    "type": "get",
+    "url": "/api/inventory/all",
+    "title": "Get All Inventory",
+    "name": "getInventory",
+    "group": "Inventory",
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Fetched!!!\",\n  \"data\": [\n      {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"IC-GAI-1\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/inventory-routes.js",
+    "groupTitle": "Inventory"
+  },
+  {
+    "version": "1.0.0",
+    "type": "post",
     "url": "/api/product/create",
     "title": "Create New Product",
     "name": "createProduct",
@@ -447,7 +712,7 @@ define({ "api": [
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"PC-GCI-2\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"PC-GCI-2\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         },
         {
@@ -605,6 +870,39 @@ define({ "api": [
       ]
     },
     "filename": "./routes/product-routes.js",
+    "groupTitle": "Product"
+  },
+  {
+    "version": "1.0.0",
+    "type": "get",
+    "url": "/api/inventory/:productId",
+    "title": "Get Inventory Details By Product Id",
+    "name": "getInventoryByProductId",
+    "group": "Product",
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Fetched!!!\",\n  \"data\": {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Inventory Stock Found with The Provided Id\",\n  \"errorCode\": \"IC-GIBI-1\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"IC-GIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/inventory-routes.js",
     "groupTitle": "Product"
   },
   {

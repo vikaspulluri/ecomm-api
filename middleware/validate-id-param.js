@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
             .errorType('dataValidationError')
             .errorCode('VIP-1')
             .build();
-        return res.status(401).send(jsonResponse);
+        return res.status(400).send(jsonResponse);
     }
     return next();
 }

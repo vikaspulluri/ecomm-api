@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const checkAuth = require('../middleware/check-auth');
+const {decodeToken, checkUser, checkPrevilieges} = require('../middleware/check-auth');
 const categoryController = require('../controllers/category-controller');
 
 /**
@@ -67,7 +67,7 @@ const categoryController = require('../controllers/category-controller');
  *      "errorType": "dataValidationError"
  *    }
  */
-router.post('/create', checkAuth, categoryController.checkCategoryExistence('create'), categoryController.checkParentCategoryValidity('create'), categoryController.createCategory);
+router.post('/create', decodeToken, checkUser, checkPrevilieges, categoryController.checkCategoryExistence('create'), categoryController.checkParentCategoryValidity('create'), categoryController.createCategory);
 
 /**
  * @apiVersion 1.0.0
@@ -124,7 +124,7 @@ router.post('/create', checkAuth, categoryController.checkCategoryExistence('cre
  *      "errorType": "OAuthError"
  *    }
  */
-router.get('/all', checkAuth, categoryController.getCategories);
+router.get('/all', decodeToken, checkUser, checkPrevilieges, categoryController.getCategories);
 
 /**
  * @apiVersion 1.0.0
@@ -199,7 +199,7 @@ router.get('/all', checkAuth, categoryController.getCategories);
  *      "errorType": "dataValidationError"
  *    }
  */
-router.put('/edit/:slugname', checkAuth, categoryController.checkCategoryExistence('edit'), categoryController.checkParentCategoryValidity('edit'), categoryController.editCategory);
+router.put('/edit/:slugname', decodeToken, checkUser, checkPrevilieges, categoryController.checkCategoryExistence('edit'), categoryController.checkParentCategoryValidity('edit'), categoryController.editCategory);
 
 /**
  * @apiVersion 1.0.0
@@ -251,7 +251,7 @@ router.put('/edit/:slugname', checkAuth, categoryController.checkCategoryExisten
  *      "errorType": "UnknownError"
  *    }
  */
-router.delete('/delete/:slugname', checkAuth, categoryController.deleteCategory);
+router.delete('/delete/:slugname', decodeToken, checkUser, checkPrevilieges, categoryController.deleteCategory);
 
 
 module.exports = router;

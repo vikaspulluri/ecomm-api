@@ -2,6 +2,293 @@ define({ "api": [
   {
     "version": "1.0.0",
     "type": "post",
+    "url": "/api/cart/add",
+    "title": "Add a product to Cart",
+    "name": "addItem2Cart",
+    "group": "Cart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Authorization Token prepended with (Bearer )</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "product",
+            "description": "<p>Product Id (Id generated while creating the product)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Number of products to be added</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 201 Created\n{\n  \"error\": false,\n  \"message\": \"Item Added To Cart Successfully!!!\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You Cannot Add More Than 25 Products To Cart At Once\",\n  \"errorCode\": \"CC-AI2C-1\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"The Product is Either Inactive Or Running Out Of Stock\",\n  \"errorCode\": \"CC-AI2C-2\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"There are only ${req.body.stockLimit} products left in stock and you cannot add more than that\",\n  \"errorCode\": \"CC-AI2C-3\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Unable To Add The Item To Cart\",\n  \"errorCode\": \"CC-AI2C-4\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"CC-AI2C-5\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cart-routes.js",
+    "groupTitle": "Cart"
+  },
+  {
+    "version": "1.0.0",
+    "type": "put",
+    "url": "/api/cart/delete",
+    "title": "Delete an item from cart",
+    "name": "deleteItemFromCart",
+    "group": "Cart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Authorization Token prepended with (Bearer )</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "product",
+            "description": "<p>Product Id (Id generated while creating the product)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Deleted!!!\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CC-DCI-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Unable to delete the Item\",\n  \"errorCode\": \"CC-DCI-2\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CC-DCI-3\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cart-routes.js",
+    "groupTitle": "Cart"
+  },
+  {
+    "version": "1.0.0",
+    "type": "get",
+    "url": "/api/cart/history",
+    "title": "Get Cart History",
+    "name": "getCartHistory",
+    "group": "Cart",
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully retrieved the cart data!!!\",\n  \"data\": [\n      {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CC-GCH-1\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cart-routes.js",
+    "groupTitle": "Cart"
+  },
+  {
+    "version": "1.0.0",
+    "type": "get",
+    "url": "/api/cart/info",
+    "title": "Get Saved Cart",
+    "name": "getSavedCart",
+    "group": "Cart",
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully retrieved the cart data!!!\",\n  \"data\": [\n      {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CC-GAC-1\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cart-routes.js",
+    "groupTitle": "Cart"
+  },
+  {
+    "version": "1.0.0",
+    "type": "put",
+    "url": "/api/cart/update",
+    "title": "Update a cart item",
+    "name": "updateCartItem",
+    "group": "Cart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>Authorization Token prepended with (Bearer )</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "product",
+            "description": "<p>Product Id (Id generated while creating the product)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "quantity",
+            "description": "<p>Number of products to be added to cart</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Item Successfully Updated!!!\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You cannot add more than 25 products to cart at once.\",\n  \"errorCode\": \"CC-UCI-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"There are only X products left in stock and you cannot add more than that\",\n  \"errorCode\": \"CC-UCI-2\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Unable to update the item\",\n  \"errorCode\": \"CC-UCI-3\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"CC-UCI-4\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cart-routes.js",
+    "groupTitle": "Cart"
+  },
+  {
+    "version": "1.0.0",
+    "type": "post",
     "url": "/api/category/create",
     "title": "Create New Category",
     "name": "createCategory",
@@ -288,34 +575,6 @@ define({ "api": [
     "type": "",
     "url": "",
     "version": "0.0.0",
-    "filename": "./doc/main.js",
-    "group": "F__Workspace_Edwisor_courses_Latest_Courses_e_commerce_api_doc_main_js",
-    "groupTitle": "F__Workspace_Edwisor_courses_Latest_Courses_e_commerce_api_doc_main_js",
-    "name": ""
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
     "filename": "./docs/main.js",
     "group": "F__Workspace_Edwisor_courses_Latest_Courses_e_commerce_api_docs_main_js",
     "groupTitle": "F__Workspace_Edwisor_courses_Latest_Courses_e_commerce_api_docs_main_js",
@@ -549,7 +808,7 @@ define({ "api": [
           "type": "json"
         },
         {
-          "title": "Error Response-5",
+          "title": "Error Response-6",
           "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"IC-UIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }

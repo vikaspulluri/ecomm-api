@@ -1,18 +1,17 @@
 const User = require('../models/user-model');
 const bcrypt = require('bcryptjs');
-const ResponseBuilder = require('../libraries/response-builder');
+const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
 const jwt = require('jsonwebtoken');
 
 
 exports.createUser = (req, res, next) => {
     if(!req.body.password){
-        let response = new ResponseBuilder().error(true)
-                                        .message('Invalid request')
+        let error = new ErrorResponseBuilder('Invalid request')
+                                        .errorType('DataValidationError')
                                         .status(400)
-                                        .errorType('dataValidationError')
                                         .errorCode('UC-CU-1')
                                         .build();
-        return res.status(400).send(response);
+        return next(error);
     }
     const date = new Date().toLocaleString();
     const isAdmin = (req.headers.isadmin) ? true : false;
@@ -44,21 +43,17 @@ exports.createUser = (req, res, next) => {
                         phone: result.phone,
                         address: result.address
                     };
-                    let response = new ResponseBuilder().error(false)
-                                        .message('User created successfully!!!')
+                    let response = new SuccessResponseBuilder('User created successfully!!!')
                                         .status(201)
                                         .data(data)
                                         .build();
                     return res.status(201).send(response);
                 })
                 .catch(error => {
-                    let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Something went wrong, please try again later...')
-                                        .status(500)
-                                        .errorType('UnknwonError')
+                    let err = new ErrorResponseBuilder()
                                         .errorCode('UC-CU-2')
                                         .build();
-                    return res.status(500).send(jsonResponse);
+                    return next(err);
                 })
             })
 }
@@ -68,26 +63,24 @@ exports.loginUser = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
           if(!user) {
-            let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Invalid username provided')
+            let error = new ErrorResponseBuilder('Invalid username provided')
                                         .status(401)
                                         .errorType('OAuthError')
                                         .errorCode('UC-LU-1')
                                         .build();
-            return res.status(401).send(jsonResponse);
+            return next(error);
           }
           fetchedUser = user;
           return bcrypt.compare(req.body.password, fetchedUser.password);
         })
         .then(result => {
             if(!result){
-                let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Invalid Authentication Credentials')
+                let error = new ErrorResponseBuilder('Invalid Authentication Credentials')
                                         .status(401)
                                         .errorType('OAuthError')
                                         .errorCode('UC-LU-2')
                                         .build();
-                return res.status(401).send(jsonResponse);
+                return next(error);
             }
             const token = jwt.sign({email: fetchedUser.email, id: fetchedUser._id, isAdmin: fetchedUser.hasAdminPrevilieges}, process.env.JWT_KEY, {expiresIn: '1h'});
             const data = {
@@ -96,34 +89,21 @@ exports.loginUser = (req, res, next) => {
                 username: fetchedUser.firstName + ' ' + fetchedUser.lastName,
                 userId: fetchedUser._id
             };
-            let jsonResponse = new ResponseBuilder().error(false)
-                                        .message('User Logged In Successfully...')
+            let jsonResponse = new SuccessResponseBuilder('User Logged In Successfully...')
                                         .status(200)
                                         .data(data)
                                         .build();
             return res.status(200).send(jsonResponse);
         })
         .catch(err => {
-            let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Authentication Failed')
-                                        .status(500)
-                                        .errorType('OAuthError')
+            let error = new ErrorResponseBuilder()
                                         .errorCode('UC-LU-3')
                                         .build();
-            return res.status(500).send(jsonResponse);
+            return next(error);
         });
 }
 
 exports.getUser = (req, res, next) => {
-    if(!req.userData) {
-        let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Authentication Failed')
-                                        .status(401)
-                                        .errorType('OAuthError')
-                                        .errorCode('UC-GU-1')
-                                        .build();
-        return res.status(401).send(jsonResponse);
-    }
     User.findById(req.userData.userId)
         .exec()
         .then(result => {
@@ -137,20 +117,14 @@ exports.getUser = (req, res, next) => {
                 address: result.address,
                 orders: result.orders
             }
-            let jsonResponse = new ResponseBuilder().error(false)
-                                        .message('User Data Fetched Successfully!!!')
+            let jsonResponse = new SuccessResponseBuilder('User Data Fetched Successfully!!!')
                                         .status(200)
                                         .data(data)
                                         .build();
             res.status(200).send(jsonResponse);
         })
         .catch(error => {
-            let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Something went wrong, please try again later...')
-                                        .status(500)
-                                        .errorType('UnknownError')
-                                        .errorCode('UC-GU-2')
-                                        .build();
-            return res.status(500).send(jsonResponse);
+            let err = new ErrorResponseBuilder().errorCode('UC-GU-1').build();
+            return next(err);
         })
 }

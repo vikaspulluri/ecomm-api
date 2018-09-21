@@ -1,15 +1,14 @@
-const ResponseBuilder = require('../libraries/response-builder');
+const {ErrorResponseBuilder} = require('../libraries/response-builder');
 const shortId = require('shortid');
 
 module.exports = (req, res, next) => {
     if(!req.params.id || !shortId.isValid(req.params.id)) {
-        let jsonResponse = new ResponseBuilder().error(true)
-            .message('Invalid Id Provided')
+        let error = new ErrorResponseBuilder('Invalid Id Provided')
             .status(400)
             .errorType('dataValidationError')
             .errorCode('VIP-1')
             .build();
-        return res.status(400).send(jsonResponse);
+        return next(error);
     }
     return next();
 }

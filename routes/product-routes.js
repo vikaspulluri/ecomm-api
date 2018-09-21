@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const checkAuth = require('../middleware/check-auth');
+const {decodeToken, checkUser, checkPrevilieges} = require('../middleware/check-auth');
 const productController = require('../controllers/product-controller');
 
 
@@ -87,7 +87,7 @@ const productController = require('../controllers/product-controller');
  *      "errorType": "dataValidationError"
  *    }
  */
-router.post('/create', checkAuth, productController.getCategoryId, productController.createProduct);
+router.post('/create', decodeToken, checkUser, checkPrevilieges, productController.getCategoryId, productController.createProduct);
 
 /**
  * @apiVersion 1.0.0
@@ -298,7 +298,7 @@ router.get('/:id', productController.getProductById);
  *      "errorType": "UnknownError"
  *    }
  */
-router.put('/edit/:id', checkAuth, productController.checkProductExistence, productController.getCategoryId, productController.updateProduct);
+router.put('/edit/:id', decodeToken, checkUser, checkPrevilieges, productController.checkProductExistence, productController.getCategoryId, productController.updateProduct);
 
 /**
  * @apiVersion 1.0.0
@@ -349,7 +349,7 @@ router.put('/edit/:id', checkAuth, productController.checkProductExistence, prod
  *      "errorType": "UnknownError"
  *    }
  */
-router.delete('/delete/:id', checkAuth, productController.checkProductExistence, productController.deleteProduct);
+router.delete('/delete/:id', decodeToken, checkUser, checkPrevilieges, productController.checkProductExistence, productController.deleteProduct);
 
 
 module.exports = router;

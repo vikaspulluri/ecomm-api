@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const checkAuth = require('../middleware/check-auth');
+const {decodeToken, checkUser, checkPrevilieges} = require('../middleware/check-auth');
 const inventoryController = require('../controllers/inventory-controller');
 const validateIdParam = require('../middleware/validate-id-param');
 
@@ -79,7 +79,9 @@ const validateIdParam = require('../middleware/validate-id-param');
  *      "errorType": "UnknownError"
  *    }
  */
-router.post('/add', checkAuth, 
+router.post('/add', decodeToken,
+                    checkUser,
+                    checkPrevilieges,
                     inventoryController.checkProductExistenceInStock('add'),
                     inventoryController.addItemToInventory);
 
@@ -262,7 +264,7 @@ router.get('/:id', validateIdParam, inventoryController.getInventoryById);
  *      "errorCode": "IC-UIBI-1",
  *      "errorType": "UnknownError"
  *    }
- * @apiErrorExample {json} Error Response-5
+ * @apiErrorExample {json} Error Response-6
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
@@ -271,7 +273,7 @@ router.get('/:id', validateIdParam, inventoryController.getInventoryById);
  *      "errorType": "UnknownError"
  *    }
  */
-router.put('/edit/:id', checkAuth,
+router.put('/edit/:id', decodeToken, checkUser, checkPrevilieges,
                         validateIdParam,
                         inventoryController.checkProductExistenceInStock('update'),
                         inventoryController.updateInventoryById);
@@ -333,7 +335,7 @@ router.put('/edit/:id', checkAuth,
  *      "errorType": "UnknownError"
  *    }
  */
-router.delete('/delete/:id', checkAuth, validateIdParam, inventoryController.deleteInventoryById);
+router.delete('/delete/:id', decodeToken, checkUser, checkPrevilieges, validateIdParam, inventoryController.deleteInventoryById);
 
 
 

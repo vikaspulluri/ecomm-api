@@ -41,4 +41,14 @@ app.use('/api/product', productRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cart', cartRoutes);
 
+app.use((err, req, res, next) => {
+  res.status(err.status).json(err);
+})
+
+app.use('*', (req, res, next) => {
+  res.status(404).send('Route Not Found!!!');
+})
+
+
+
 module.exports = app;

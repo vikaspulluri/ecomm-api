@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const checkAuth = require('../middleware/check-auth');
+const {decodeToken, checkUser, checkPrevilieges} = require('../middleware/check-auth');
 const userController = require('../controllers/user-controller');
 const uniqueValidator = require('../middleware/unique-validator');
 const users = require('../models/user-model');
@@ -158,7 +158,7 @@ router.post('/login', userController.loginUser);
  *      "errorType": "OAuthError"
  *    }
  */
-router.get('/@self', checkAuth, userController.getUser);
+router.get('/@self', decodeToken, checkUser, userController.getUser);
 
 
 module.exports = router;

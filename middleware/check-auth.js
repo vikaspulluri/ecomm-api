@@ -1,19 +1,48 @@
 const jwt = require('jsonwebtoken');
-let ResponseBuilder = require('../libraries/response-builder');
+let {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
 
-module.exports = (req, res, next) => {
+const decodeToken = (req, res, next) => {
   try{
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, process.env.JWT_KEY);
     req.userData = {email: decodedToken.email, userId: decodedToken.id, isAdmin: decodedToken.isAdmin};
     next();
   } catch(error) {
-    let jsonResponse = new ResponseBuilder().error(true)
-                                        .message('Authentication Failed')
+    let err = new ErrorResponseBuilder('Authentication Failed')
                                         .status(401)
                                         .errorType('OAuthError')
                                         .errorCode('CA-1')
                                         .build();
-    return res.status(401).send(jsonResponse);
+    return next(err);
   }
+}
+
+const checkUser = (req, res, next) => {
+  if(!req.userData) {
+    let error = new ErrorResponseBuilder('Authentication Failed')
+                                              .status(401)
+                                              .errorType('OAuthError')
+                                              .errorCode('CA-2')
+                                              .build();
+    return next(error);
+  }
+  next();
+}
+
+const checkPrevilieges = (req, res, next) => {
+  if(!req.userData.isAdmin){
+    let error = new ErrorResponseBuilder('You need admin previleges to create/modify a category')
+                                .status(401)
+                                .errorType('OAuthError')
+                                .errorCode('CA-3')
+                                .build();
+    return next(error);
+  }
+  next();
+}
+
+module.exports = {
+  decodeToken,
+  checkUser,
+  checkPrevilieges
 }

@@ -1,9 +1,17 @@
 // We will update inventory once cart item moved to checkout phase which is out of scope for this project
 const Inventory = require('../models/inventory-model');
 const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
+const validateRequest = require('../libraries/validate-request');
+const dateUtility = require('../libraries/date-formatter');
+
 
 exports.checkProductExistenceInStock = function(options){
     return (req, res, next) => {
+        let reqValidity = validateRequest('name');
+        if(reqValidity.includes(false)) {
+            let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('IC-CPEIS-1').build();
+            return next(error);
+        }
         let productId;
         productId = options === 'add' ? req.body.product : req.params.id;
         Inventory.countDocuments({product: productId})
@@ -28,41 +36,52 @@ exports.checkProductExistenceInStock = function(options){
                     return next();
                 })
                 .catch(err => {
-                    let err = new ErrorResponseBuilder()
-                                        .errorCode('IC-CPEIS-3')
-                                        .build();
+                    let err = new ErrorResponseBuilder().errorCode('IC-CPEIS-3').build();
                     return next(err);
                 })
     }
 }
 
 exports.addItemToInventory = (req, res, next) => {
+    let reqValidity = validateRequest('productId','availableStock', 'inventoryStatus');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request')
+                                        .errorType('DataValidationError')
+                                        .status(400)
+                                        .errorCode('IC-AITI-1')
+                                        .build();
+        return next(error);
+    }
     const data = {
         product: req.body.productId,
         availableStock: req.body.availableStock,
         inventoryStatus: req.body.inventoryStatus,
         creator: req.userData.userId,
-        createdDate: new Date().toLocaleString()
+        createdDate: dateUtility.formatDate()
     }
 
     const inventory = new Inventory(data);
     inventory.save()
             .then(result => {
-                let jsonResponse = new SuccessResponseBuilder('Item Successfully Added To Inventory')
-                                        .status(201)
-                                        .data(result)
-                                        .build();
+                let jsonResponse = new SuccessResponseBuilder('Item Successfully Added To Inventory').status(201).data(result).build();
                 return res.status(201).send(jsonResponse)
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder()
-                                        .errorCode('IC-AITI-1')
-                                        .build();
+                let err = new ErrorResponseBuilder().errorCode('IC-AITI-2').build();
                 return next(err);
             })
 }
 
 exports.updateInventoryById = (req, res, next) => {
+    let reqValidity = validateRequest('availableStock', 'inventoryStatus');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request')
+                                        .errorType('DataValidationError')
+                                        .status(400)
+                                        .errorCode('IC-UIBI-1')
+                                        .build();
+        return next(error);
+    }
     const updatedObj = {
         product: req.params.id,
         availableStock: req.body.availableStock,
@@ -77,15 +96,15 @@ exports.updateInventoryById = (req, res, next) => {
                     let error = new ErrorResponseBuilder('Unable to Update the Inventory')
                                         .status(404)
                                         .errorType('ProductNotFoundError')
-                                        .errorCode('IC-UIBI-1')
+                                        .errorCode('IC-UIBI-2')
                                         .build();
                     return next(error);
                 }
-                let jsonResponse = new SuccessResponseBuilder('Successfully Updated!!!').status(200).build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Updated!!!').build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('IC-UIBI-2').build();
+                let err = new ErrorResponseBuilder().errorCode('IC-UIBI-3').build();
                 return next(err);
             })
 }
@@ -102,7 +121,7 @@ exports.deleteInventoryById = (req, res, next) => {
                                         .build();
                     return next(error);    
                 }
-                let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').status(200).build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(err => {
@@ -116,7 +135,7 @@ exports.getAllInventory = (req, res, next) => {
             .populate(['product'])
             .exec()
             .then(result => {
-                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched!!!').status(200).data(result).build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched!!!').data(result).build();
                 return res.status(200).send(jsonResponse)
             })
             .catch(error => {
@@ -137,7 +156,7 @@ exports.getInventoryById = (req, res, next) => {
                                         .build();
                     return next(error);
                 }
-                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched').status(200).data(result).build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched').data(result).build();
                 return res.status('200').send(jsonResponse)
             })
             .catch(error => {

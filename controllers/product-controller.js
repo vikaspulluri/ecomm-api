@@ -2,8 +2,15 @@ const Product = require('../models/product-model');
 const Category = require('../models/category-model');
 const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
 const shortId = require('shortid');
+const validateRequest = require('../libraries/validate-request');
+const dateUtility = require('../libraries/date-formatter');
 
 exports.getCategoryId = (req, res, next) => {
+    let reqValidity = validateRequest('category');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
+        return next(error);
+    }
     Category.findOne({slugname: req.body.category})
             .exec()
             .then(result => {
@@ -25,20 +32,27 @@ exports.getCategoryId = (req, res, next) => {
 }
 
 exports.createProduct = (req, res, next) => {
+    let reqValidity = validateRequest('name','description');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
+        return next(error);
+    }
     const slugname = req.body.name.toString().toLowerCase().split(' ').join('-');
     const body = {
         _id: shortId.generate(),
         name: req.body.name,
         description: req.body.description,
         slugname: slugname,
-        createdDate: new Date().toLocaleString(),
+        createdDate: dateUtility.formatDate(),
         category: req.categoryId,
-        price: {
-            originalPrice: req.body.price.originalPrice,
+        createdBy: req.userData.userId
+    }
+    if(req.body.price && req.body.price.originalPrice) {
+        body.price = {
+            originalPrice: req.body.price.originalPrice ? req.body.price.originalPrice : 0,
             offerPrice: req.body.price.offerPrice ? req.body.price.offerPrice : req.body.price.originalPrice,
             currency: req.body.price.currency ? req.body.price.currency : 'INR'
-        },
-        createdBy: req.userData.userId
+        }
     }
     if(req.body.meta) {
         body.meta = {
@@ -50,10 +64,7 @@ exports.createProduct = (req, res, next) => {
     const product = new Product(body);
     product.save()
             .then(result => {
-                let jsonResponse = new SuccessResponseBuilder('Successfully Created')
-                                        .status(201)
-                                        .data(result)
-                                        .build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Created').status(201).data(result).build();
                 return res.status(201).send(jsonResponse);
             })
             .catch(error => {
@@ -68,10 +79,7 @@ exports.getProducts = (req, res, next) => {
             .exec()
             .then(result => {
                 let response = result || [];
-                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched')
-                                        .status(200)
-                                        .data(response)
-                                        .build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched').data(response).build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
@@ -94,10 +102,7 @@ exports.getProductById = (req, res, next) => {
                                         .build();
                 return next(error);
                 }
-                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched')
-                                        .status(200)
-                                        .data(result)
-                                        .build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Fetched').data(result).build();
                 return res.status(200).send(jsonResponse)
             })
             .catch(err => {
@@ -137,17 +142,24 @@ exports.checkProductExistence = (req, res, next) => {
 }
 
 exports.updateProduct = (req, res, next) => {
+    let reqValidity = validateRequest('name','description');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
+        return next(error);
+    }
     const body = {
         name: req.body.name,
         description: req.body.description,
         category: req.categoryId,
-        lastModifiedOn: new Date().toLocaleDateString(),
-        lastModifiedBy: req.userData.userId,
-        price: {
+        lastModifiedOn: dateUtility.formatDate(),
+        lastModifiedBy: req.userData.userId
+    }
+    if(req.body.price && req.body.price.originalPrice) {
+        body.price = {
             originalPrice: req.body.price.originalPrice,
             offerPrice: req.body.price.offerPrice ? req.body.price.offerPrice : req.body.price.originalPrice,
             currency: req.body.price.currency ? req.body.price.currency : 'INR'
-        },
+        }
     }
     if(req.body.meta) {
         body.meta = {
@@ -168,8 +180,8 @@ exports.updateProduct = (req, res, next) => {
                                         .build();
                 return next(error);
                 }
-                let jsonResponse = new SuccessResponseBuilder('Successfully Updated').status(200).build();
-                return res.status(200).send(jsonResponse); 
+                let jsonResponse = new SuccessResponseBuilder('Successfully Updated').build();
+                return res.status(200).send(jsonResponse);
             })
             .catch(err => {
                 let err = new ErrorResponseBuilder().errorCode('PC-UP-2').build();
@@ -180,7 +192,7 @@ exports.updateProduct = (req, res, next) => {
 exports.deleteProduct = (req, res, next) => {
     Product.deleteOne({_id: req.params.id})
             .then(result => {
-                let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').status(200).build();
+                let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(err => {

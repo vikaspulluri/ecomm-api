@@ -1,16 +1,13 @@
 const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
 const Category = require('../models/category-model');
-
+const validateRequest = require('../libraries/validate-request');
+const dateUtility = require('../libraries/date-formatter');
 
 exports.checkCategoryExistence = function(options){
     return (req, res, next) => {
-        //TODO: validate request
-        if(!req.body.name) {
-            let error = new ErrorResponseBuilder('You Must specify a name for category')
-                                        .status(400)
-                                        .errorType('dataValidationError')
-                                        .errorCode('CTC-CGE-1')
-                                        .build();
+        let reqValidity = validateRequest('name');
+        if(reqValidity.includes(false)) {
+            let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CTC-CCE-1').build();
             return next(error);
         }
         let slugname;
@@ -75,11 +72,16 @@ exports.checkParentCategoryValidity = function(options){
 }
 
 exports.createCategory = (req, res, next) => {
+    let reqValidity = validateRequest('name','description');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CTC-CC-1').build();
+        return next(error);
+    }
     let categoryObj = {
         name: req.body.name,
         description: req.body.description,
         creator: req.userData.userId,
-        createdDate: new Date().toLocaleString(),
+        createdDate: dateUtility.formatDate(),
         slugname: req.slugname
     };
     if(req.parentCategory) {
@@ -124,11 +126,16 @@ exports.getCategories = (req, res, next) => {
 }
 
 exports.editCategory = (req,res, next) => {
+    let reqValidity = validateRequest('name','description');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CTC-EC-1').build();
+        return next(error);
+    }
     let slugname = req.body.name.toString().toLowerCase().split(' ').join('-');
     const updatedObj = {name: req.body.name,
                         description: req.body.description,
                         slugname: slugname,
-                        lastUpdated: new Date().toLocaleString(),
+                        lastUpdated: dateUtility.formatDate(),
                         lastUpdatedBy: req.userData.userId
                     };
     if(req.parentCategory) {
@@ -140,7 +147,7 @@ exports.editCategory = (req,res, next) => {
                 {new: true}
             )
             .then(result => {
-                let jsonResponse = new SuccessResponseBuilder('Category Successfully Updated!!!').status(200).data(result).build();
+                let jsonResponse = new SuccessResponseBuilder('Category Successfully Updated!!!').data(result).build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(err => {
@@ -160,7 +167,7 @@ exports.deleteCategory = (req, res, next) => {
                                         .build();
                     return res.status(404).send(error);
                 }
-                let jsonResponse = new SuccessResponseBuilder('Category Successfully Deleted!!!').status(200).build();
+                let jsonResponse = new SuccessResponseBuilder('Category Successfully Deleted!!!').build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {

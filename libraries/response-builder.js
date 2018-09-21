@@ -5,6 +5,7 @@ class ErrorResponseBuilder extends Error {
         super(message);
         this.name = this.constructor.name;
         this.error = true;
+        this.status = 500;
     }
     status(sCode) {
         this.status = sCode;
@@ -31,6 +32,7 @@ class SuccessResponseBuilder {
     constructor(message) {
         this.message = message;
         this.error = false;
+        this.status = 200;
     }
     error(err) {
         this.error = err;

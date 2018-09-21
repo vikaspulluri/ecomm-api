@@ -6,13 +6,9 @@ const validateRequest = require('../libraries/validate-request');
 const dateUtility = require('../libraries/date-formatter');
 
 exports.createUser = (req, res, next) => {
-    let reqValidity = validateRequest('email','firstName','lastName','password');
+    let reqValidity = validateRequest(req, 'email','firstName','lastName','password');
     if(reqValidity.includes(false)) {
-        let error = new ErrorResponseBuilder('Invalid request')
-                                        .errorType('DataValidationError')
-                                        .status(400)
-                                        .errorCode('UC-CU-1')
-                                        .build();
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('UC-CU-1').build();
         return next(error);
     }
     const isAdmin = (req.headers.isadmin) ? true : false;
@@ -60,7 +56,7 @@ exports.createUser = (req, res, next) => {
 }
 
 exports.loginUser = (req, res, next) => {
-    let reqValidity = validateRequest('email','password');
+    let reqValidity = validateRequest(req, 'email','password');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request')
                                         .errorType('DataValidationError')

@@ -50,7 +50,7 @@ exports.checkIsProductActiveInCart = (req, res, next) => {
 
 
 exports.addItem2Cart = (req, res, next) => {
-    let reqValidity = validateRequest('quantity','productId');
+    let reqValidity = validateRequest(req, 'quantity','productId');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CC-AI2C-1').build();
         return next(error);
@@ -148,7 +148,7 @@ exports.getCartHistory = (req, res, next) => {
 }
 
 exports.updateCartItem = (req, res, next) => {
-    let reqValidity = validateRequest('quantity','productId');
+    let reqValidity = validateRequest(req, 'quantity','productId');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CC-AI2C-1').build();
         return next(error);
@@ -211,7 +211,7 @@ exports.deleteCartItem = (req, res, next) => {
             let jsonResponse = new SuccessResponseBuilder('Item Successfully Deleted From Cart').build();
             return res.status(200).send(jsonResponse)
         })
-        .catch(err => {
+        .catch(error => {
             let err = new ErrorResponseBuilder().errorCode('CC-DCI-2').build();
             return next(err);
         })

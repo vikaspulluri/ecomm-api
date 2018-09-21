@@ -14,11 +14,10 @@ module.exports = function(model, field) {
                                         .build();
                     return next(response);
                 }
-                next();
+                return next();
              })
              .catch(error => {
-                let response = new ErrorResponseBuilder()
-                                        .message(config.messages.errors.unknown)
+                let response = new ErrorResponseBuilder(config.messages.errors.unknown)
                                         .errorCode('UV-2')
                                         .build();
                 return next(response);

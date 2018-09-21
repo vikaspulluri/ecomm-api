@@ -6,7 +6,7 @@ const validateRequest = require('../libraries/validate-request');
 const dateUtility = require('../libraries/date-formatter');
 
 exports.getCategoryId = (req, res, next) => {
-    let reqValidity = validateRequest('category');
+    let reqValidity = validateRequest(req, 'category');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
         return next(error);
@@ -32,7 +32,7 @@ exports.getCategoryId = (req, res, next) => {
 }
 
 exports.createProduct = (req, res, next) => {
-    let reqValidity = validateRequest('name','description');
+    let reqValidity = validateRequest(req, 'name','description');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
         return next(error);
@@ -105,7 +105,7 @@ exports.getProductById = (req, res, next) => {
                 let jsonResponse = new SuccessResponseBuilder('Successfully Fetched').data(result).build();
                 return res.status(200).send(jsonResponse)
             })
-            .catch(err => {
+            .catch(error => {
                 let err = new ErrorResponseBuilder().errorCode('PC-GPBI-1').build();
                 return next(err);
             })
@@ -135,14 +135,14 @@ exports.checkProductExistence = (req, res, next) => {
                 }
                 return next();
             })
-            .catch(err => {
+            .catch(error => {
                 let err = new ErrorResponseBuilder().errorCode('PC-CPE-3').build();
                 return next(err);
             })
 }
 
 exports.updateProduct = (req, res, next) => {
-    let reqValidity = validateRequest('name','description');
+    let reqValidity = validateRequest(req, 'name','description');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
         return next(error);
@@ -183,7 +183,7 @@ exports.updateProduct = (req, res, next) => {
                 let jsonResponse = new SuccessResponseBuilder('Successfully Updated').build();
                 return res.status(200).send(jsonResponse);
             })
-            .catch(err => {
+            .catch(error => {
                 let err = new ErrorResponseBuilder().errorCode('PC-UP-2').build();
                 return next(err);
             })
@@ -195,7 +195,7 @@ exports.deleteProduct = (req, res, next) => {
                 let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').build();
                 return res.status(200).send(jsonResponse);
             })
-            .catch(err => {
+            .catch(error => {
                 let err = new ErrorResponseBuilder().errorCode('PC-GP-1').build();
                 return next(err);
             })

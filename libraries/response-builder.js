@@ -1,11 +1,8 @@
-const Response = require('./response');
+const {ErrorResponse, SuccessResponse} = require('./response');
 
-class ErrorResponseBuilder extends Error {
+class ErrorResponseBuilder {
     constructor(message) {
-        super(message);
-        this.name = this.constructor.name;
-        this.error = true;
-        this.status = 500;
+        this.message = message;
     }
     status(sCode) {
         this.status = sCode;
@@ -24,15 +21,13 @@ class ErrorResponseBuilder extends Error {
         return this;
     }
     build() {
-        return new Response(this);
+        return new ErrorResponse(this);
     }
 }
 
 class SuccessResponseBuilder {
     constructor(message) {
         this.message = message;
-        this.error = false;
-        this.status = 200;
     }
     error(err) {
         this.error = err;
@@ -55,11 +50,11 @@ class SuccessResponseBuilder {
         return this;
     }
     build() {
-        return new Response(this);
+        return new SuccessResponse(this);
     }
 }
 
 module.exports = {
-    ErrorResponseBuilder,
-    SuccessResponseBuilder
+    SuccessResponseBuilder: SuccessResponseBuilder,
+    ErrorResponseBuilder: ErrorResponseBuilder
 }

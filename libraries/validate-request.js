@@ -1,4 +1,4 @@
-module.exports = (...params) => {
+module.exports = (req,...params) => {
     const reqValidityArr = [];
     params.forEach((param) => {
         if(typeof req.body[param] === 'undefined' || typeof req.body[param] === '' || typeof req.body[param] === null) {
@@ -6,6 +6,6 @@ module.exports = (...params) => {
         } else {
             reqValidityArr.push(true);
         }
-    })
+    });
     return reqValidityArr;
 }

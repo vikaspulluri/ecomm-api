@@ -5,7 +5,7 @@ const dateUtility = require('../libraries/date-formatter');
 
 exports.checkCategoryExistence = function(options){
     return (req, res, next) => {
-        let reqValidity = validateRequest('name');
+        let reqValidity = validateRequest(req, 'name');
         if(reqValidity.includes(false)) {
             let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CTC-CCE-1').build();
             return next(error);
@@ -64,7 +64,7 @@ exports.checkParentCategoryValidity = function(options){
                                         .build();
                     return next(error);
                 })
-                .catch(err => {
+                .catch(error => {
                     let err = new ErrorResponseBuilder().errorCode('CTC-CPCV-2').build();
                     return next(err);
                 })
@@ -72,7 +72,7 @@ exports.checkParentCategoryValidity = function(options){
 }
 
 exports.createCategory = (req, res, next) => {
-    let reqValidity = validateRequest('name','description');
+    let reqValidity = validateRequest(req, 'name','description');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CTC-CC-1').build();
         return next(error);
@@ -126,7 +126,7 @@ exports.getCategories = (req, res, next) => {
 }
 
 exports.editCategory = (req,res, next) => {
-    let reqValidity = validateRequest('name','description');
+    let reqValidity = validateRequest(req, 'name','description');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CTC-EC-1').build();
         return next(error);
@@ -150,7 +150,7 @@ exports.editCategory = (req,res, next) => {
                 let jsonResponse = new SuccessResponseBuilder('Category Successfully Updated!!!').data(result).build();
                 return res.status(200).send(jsonResponse);
             })
-            .catch(err => {
+            .catch(error => {
                 let err = new ErrorResponseBuilder().errorCode('CTC-EC-1').build();
                 return next(err);
             })

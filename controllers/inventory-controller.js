@@ -7,7 +7,7 @@ const dateUtility = require('../libraries/date-formatter');
 
 exports.checkProductExistenceInStock = function(options){
     return (req, res, next) => {
-        let reqValidity = validateRequest('name');
+        let reqValidity = validateRequest(req, 'name');
         if(reqValidity.includes(false)) {
             let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('IC-CPEIS-1').build();
             return next(error);
@@ -35,7 +35,7 @@ exports.checkProductExistenceInStock = function(options){
                     }
                     return next();
                 })
-                .catch(err => {
+                .catch(error => {
                     let err = new ErrorResponseBuilder().errorCode('IC-CPEIS-3').build();
                     return next(err);
                 })
@@ -43,7 +43,7 @@ exports.checkProductExistenceInStock = function(options){
 }
 
 exports.addItemToInventory = (req, res, next) => {
-    let reqValidity = validateRequest('productId','availableStock', 'inventoryStatus');
+    let reqValidity = validateRequest(req, 'productId','availableStock', 'inventoryStatus');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request')
                                         .errorType('DataValidationError')
@@ -73,7 +73,7 @@ exports.addItemToInventory = (req, res, next) => {
 }
 
 exports.updateInventoryById = (req, res, next) => {
-    let reqValidity = validateRequest('availableStock', 'inventoryStatus');
+    let reqValidity = validateRequest(req, 'availableStock', 'inventoryStatus');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request')
                                         .errorType('DataValidationError')
@@ -124,7 +124,7 @@ exports.deleteInventoryById = (req, res, next) => {
                 let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').build();
                 return res.status(200).send(jsonResponse);
             })
-            .catch(err => {
+            .catch(error => {
                 let err = new ErrorResponseBuilder().errorCode('IC-DIBI-2').build();
                 return next(err);
             })

@@ -47,9 +47,7 @@ exports.createUser = (req, res, next) => {
                     return res.status(201).send(response);
                 })
                 .catch(error => {
-                    let err = new ErrorResponseBuilder()
-                                        .errorCode('UC-CU-2')
-                                        .build();
+                    let err = new ErrorResponseBuilder().status(500).errorCode('UC-CU-2').errorType('UnknownError').build();
                     return next(err);
                 })
             })
@@ -69,6 +67,7 @@ exports.loginUser = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
           if(!user) {
+              console.log('user not found')
             let error = new ErrorResponseBuilder('Invalid username provided')
                                         .status(401)
                                         .errorType('OAuthError')
@@ -98,9 +97,9 @@ exports.loginUser = (req, res, next) => {
             let jsonResponse = new SuccessResponseBuilder('User Logged In Successfully...').data(data).build();
             return res.status(200).send(jsonResponse);
         })
-        .catch(err => {
-            let error = new ErrorResponseBuilder().errorCode('UC-LU-4').build();
-            return next(error);
+        .catch(error => {
+            let err = new ErrorResponseBuilder().status(500).errorCode('UC-LU-4').errorType('UnknownError').build();
+            return next(err);
         });
 }
 
@@ -122,7 +121,7 @@ exports.getUser = (req, res, next) => {
             res.status(200).send(jsonResponse);
         })
         .catch(error => {
-            let err = new ErrorResponseBuilder().errorCode('UC-GU-1').build();
+            let err = new ErrorResponseBuilder().status(500).errorCode('UC-GU-1').errorType('UnknownError').build();
             return next(err);
         })
 }

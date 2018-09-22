@@ -42,7 +42,8 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cart', cartRoutes);
 
 app.use((err, req, res, next) => {
-  res.status(err.status).send(err);
+  let status = err.status || 500;
+  res.status(status).send(err);
 })
 
 app.use('*', (req, res, next) => {

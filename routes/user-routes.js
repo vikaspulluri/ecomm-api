@@ -47,15 +47,23 @@ const users = require('../models/user-model');
  *              "pin": 534460
  *          }
  *      }
- * @apiErrorExample {json} Error Response-1
+ *@apiErrorExample {json} Error Response-1
+ *    HTTP/1.1 400 BAD REQUEST
+ *    {
+ *      "error": true,
+ *      "message": "Invalid Request",
+ *      "errorCode": "UC-CU-1", 
+ *      "errorType": "DataValidationError"
+ *    }
+ *@apiErrorExample {json} Error Response-2
  *    HTTP/1.1 400 BAD REQUEST
  *    {
  *      "error": true,
  *      "message": "An account already exists with the provided email Id",
  *      "errorCode": "UV-1",
- *      "errorType": "duplicateDataError"
+ *      "errorType": "DuplicateDataError"
  *    }  
- * @apiErrorExample {json} Error Response-2
+ * @apiErrorExample {json} Error Response-3
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
@@ -90,27 +98,35 @@ router.post('/create', uniqueValidator(users,'email'), userController.createUser
  *          "userId": "5b96adc4744d4e1a38cf2a8a"
  *      }
  * @apiErrorExample {json} Error Response-1
- *    HTTP/1.1 401 UNAUTHORIZED
+ *    HTTP/1.1 400 BAD REQUEST
  *    {
  *      "error": true,
- *      "message": "Invalid username provided",
+ *      "message": "Invalid Request",
  *      "errorCode": "UC-LU-1",
  *      "errorType": "OAuthError"
- *    }  
+ *    }
  * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
- *      "message": "Invalid Authentication Credentials",
+ *      "message": "Invalid username provided",
  *      "errorCode": "UC-LU-2",
  *      "errorType": "OAuthError"
- *    }
+ *    }  
  * @apiErrorExample {json} Error Response-3
+ *    HTTP/1.1 401 UNAUTHORIZED
+ *    {
+ *      "error": true,
+ *      "message": "Invalid Authentication Credentials",
+ *      "errorCode": "UC-LU-3",
+ *      "errorType": "OAuthError"
+ *    }
+ * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
  *      "message": "Something went wrong, please try again later...",
- *      "errorCode": "UC-LU-3",
+ *      "errorCode": "UC-LU-4",
  *      "errorType": "UknownError"
  *    }
  */

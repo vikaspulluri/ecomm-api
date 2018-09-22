@@ -9,7 +9,7 @@ module.exports = function(model, field) {
                 if(docsCount > 0) {
                     let response = new ErrorResponseBuilder(config.messages.errors[field].validation)
                                         .status(400)
-                                        .errorType('duplicateDataError')
+                                        .errorType('DuplicateDataError')
                                         .errorCode('UV-1')
                                         .build();
                     return next(response);
@@ -17,9 +17,7 @@ module.exports = function(model, field) {
                 return next();
              })
              .catch(error => {
-                let response = new ErrorResponseBuilder(config.messages.errors.unknown)
-                                        .errorCode('UV-2')
-                                        .build();
+                let response = new ErrorResponseBuilder(config.messages.errors.unknown).errorCode('UV-2').build();
                 return next(response);
             })
     }

@@ -67,7 +67,7 @@
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"There are only ${req.body.stockLimit} products left in stock and you cannot add more than that\",\n  \"errorCode\": \"CC-AI2C-3\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"There are only X products left in stock and you cannot add more than that\",\n  \"errorCode\": \"CC-AI2C-3\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
@@ -1334,11 +1334,16 @@
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"An account already exists with the provided email Id\",\n  \"errorCode\": \"UV-1\",\n  \"errorType\": \"duplicateDataError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"UC-CU-1\", \n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"An account already exists with the provided email Id\",\n  \"errorCode\": \"UV-1\",\n  \"errorType\": \"DuplicateDataError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
           "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"UC-CU-2\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
@@ -1428,17 +1433,22 @@
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Invalid username provided\",\n  \"errorCode\": \"UC-LU-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"UC-LU-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Invalid Authentication Credentials\",\n  \"errorCode\": \"UC-LU-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Invalid username provided\",\n  \"errorCode\": \"UC-LU-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"UC-LU-3\",\n  \"errorType\": \"UknownError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Invalid Authentication Credentials\",\n  \"errorCode\": \"UC-LU-3\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"UC-LU-4\",\n  \"errorType\": \"UknownError\"\n}",
           "type": "json"
         }
       ]

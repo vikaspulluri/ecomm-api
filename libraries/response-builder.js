@@ -4,8 +4,8 @@ class ErrorResponseBuilder {
     constructor(message) {
         this.message = message;
     }
-    status(sCode) {
-        this.status = sCode;
+    status(code) {
+        this.status = code;
         return this;
     }
     data(data) {
@@ -29,24 +29,12 @@ class SuccessResponseBuilder {
     constructor(message) {
         this.message = message;
     }
-    error(err) {
-        this.error = err;
-        return this;
-    }
-    status(sCode) {
-        this.status = sCode;
+    status(code) {
+        this.status = code;
         return this;
     }
     data(data) {
         this.data = data;
-        return this;
-    }
-    errorCode(errCode) {
-        this.errorCode = errCode;
-        return this;
-    }
-    errorType(errType) {
-        this.errorType = errType;
         return this;
     }
     build() {

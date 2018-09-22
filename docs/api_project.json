@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "E-Commerce API Documentation",
   "title": "E-Commerce API",
-  "url": "",
+  "url": "http://e-comm.us-east-2.elasticbeanstalk.com",
   "author": "Vikas Pulluri",
   "created": "17-09-2018",
   "order": [
@@ -21,7 +21,7 @@
   "apidoc": "0.3.0",
   "generator": {
     "name": "apidoc",
-    "time": "2018-09-22T11:38:06.807Z",
+    "time": "2018-09-22T12:13:05.248Z",
     "url": "http://apidocjs.com",
     "version": "0.17.6"
   }

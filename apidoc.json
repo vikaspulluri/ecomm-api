@@ -6,6 +6,7 @@
     "url" : "",
     "author": "Vikas Pulluri",
     "created": "17-09-2018",
+    "url": "http://e-comm.us-east-2.elasticbeanstalk.com",
     "order": [
       "User",
       "Category",

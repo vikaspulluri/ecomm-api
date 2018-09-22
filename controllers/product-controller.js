@@ -4,6 +4,7 @@ const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/res
 const shortId = require('shortid');
 const validateRequest = require('../libraries/validate-request');
 const dateUtility = require('../libraries/date-formatter');
+const logger = require('../libraries/log-message');
 
 exports.getCategoryId = (req, res, next) => {
     let reqValidity = validateRequest(req, 'category');
@@ -26,7 +27,8 @@ exports.getCategoryId = (req, res, next) => {
                 return next(error);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-GCI-2').build();
+                logger.log(error, req, 'PC-GCI');
+                let err = new ErrorResponseBuilder().errorCode('PC-GCI-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -34,7 +36,7 @@ exports.getCategoryId = (req, res, next) => {
 exports.createProduct = (req, res, next) => {
     let reqValidity = validateRequest(req, 'name','description');
     if(reqValidity.includes(false)) {
-        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-GCI-1').build();
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('PC-CP-1').build();
         return next(error);
     }
     const slugname = req.body.name.toString().toLowerCase().split(' ').join('-');
@@ -68,7 +70,8 @@ exports.createProduct = (req, res, next) => {
                 return res.status(201).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-CP-1').build();
+                logger.log(error, req, 'PC-CP');
+                let err = new ErrorResponseBuilder().errorCode('PC-CP-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -83,7 +86,8 @@ exports.getProducts = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-GP-1').build();
+                logger.log(error, req, 'PC-GP');
+                let err = new ErrorResponseBuilder().errorCode('PC-GP-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -106,7 +110,8 @@ exports.getProductById = (req, res, next) => {
                 return res.status(200).send(jsonResponse)
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-GPBI-1').build();
+                logger.log(error, req, 'PC-GPBI');
+                let err = new ErrorResponseBuilder().errorCode('PC-GPBI-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -121,22 +126,22 @@ exports.checkProductExistence = (req, res, next) => {
                                         .build();
         return next(error);
     }
-    Product.countDocuments({_id: req.params.id})
+    Product.countDocuments({_id: id})
             .exec()
             .then(result => {
                 if(result <= 0) {
-                    let error = new ErrorResponseBuilder()
-                                        .message('No Product Found With The Requested Id')
+                    let error = new ErrorResponseBuilder('No Product Found With The Requested Id')
                                         .status(404)
                                         .errorType('ItemNotFoundError')
                                         .errorCode('PC-CPE-2')
                                         .build();
                     return next(error);
                 }
-                return next();
+                next();
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-CPE-3').build();
+                logger.log(error, req, 'PC-CPE');
+                let err = new ErrorResponseBuilder().errorCode('PC-CPE-3').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -176,7 +181,7 @@ exports.updateProduct = (req, res, next) => {
                     let error = new ErrorResponseBuilder('Update Failed')
                                         .errorCode('PC-UP-1')
                                         .status(404)
-                                        .errorType('ProductNotFoundError')
+                                        .errorType('ItemNotFoundError')
                                         .build();
                 return next(error);
                 }
@@ -184,7 +189,8 @@ exports.updateProduct = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-UP-2').build();
+                logger.log(error, req, 'PC-UP');
+                let err = new ErrorResponseBuilder().errorCode('PC-UP-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -192,11 +198,16 @@ exports.updateProduct = (req, res, next) => {
 exports.deleteProduct = (req, res, next) => {
     Product.deleteOne({_id: req.params.id})
             .then(result => {
+                if(result.n <= 0) {
+                    let error = new ErrorResponseBuilder('Unable to delete the product').status(404).errorCode('PC-GP-1').errorType('NotFoundError').build();    
+                    return next(error);
+                }
                 let jsonResponse = new SuccessResponseBuilder('Successfully Deleted').build();
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('PC-GP-1').build();
+                logger.log(error, req, 'PC-GP');
+                let err = new ErrorResponseBuilder().errorCode('PC-GP-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }

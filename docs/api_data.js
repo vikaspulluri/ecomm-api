@@ -26,7 +26,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "product",
+            "field": "productId",
             "description": "<p>Product Id (Id generated while creating the product)</p>"
           },
           {
@@ -52,17 +52,17 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You Cannot Add More Than 25 Products To Cart At Once\",\n  \"errorCode\": \"CC-AI2C-1\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You Cannot Add More Than 25 Products To Cart At Once\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"The Product is Either Inactive Or Running Out Of Stock\",\n  \"errorCode\": \"CC-AI2C-2\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"The Product is Either Inactive Or Running Out Of Stock\",\n  \"errorCode\": \"CC-AI2C-2\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
@@ -71,13 +71,8 @@ define({ "api": [
           "type": "json"
         },
         {
-          "title": "Error Response-4",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Unable To Add The Item To Cart\",\n  \"errorCode\": \"CC-AI2C-4\",\n  \"errorType\": \"UnknownError\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error Response-4",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"CC-AI2C-5\",\n  \"errorType\": \"UnknownError\"\n}",
+          "title": "Error Response-5",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Unable To Add The Item To Cart\",\n  \"errorCode\": \"CC-AI2C-4\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -112,7 +107,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "product",
+            "field": "productId",
             "description": "<p>Product Id (Id generated while creating the product)</p>"
           }
         ]
@@ -131,12 +126,17 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CC-DCI-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Unable to delete the Item\",\n  \"errorCode\": \"CC-DCI-2\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"CC-DCI-1\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-3",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Unable to delete the Item\",\n  \"errorCode\": \"CC-DCI-2\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
@@ -160,13 +160,18 @@ define({ "api": [
       "examples": [
         {
           "title": "Success Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully retrieved the cart data!!!\",\n  \"data\": [\n      {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n  ]\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully retrieved the cart data!!!\",\n  \"data\": [\n      {\n          \"item\": \"Motorola Moto X4\",\n          \"quantity\": 12,\n          \"activeStatus\": \"inactive\",\n          \"sku\": 104,\n          \"id\": \"RuU2xqFVI\"\n      },\n      {\n          \"item\": \"Adidas walking shoes\",\n          \"quantity\": 4,\n          \"activeStatus\": \"inactive\",\n          \"sku\": 105,\n          \"id\": \"eulweKj-7\"\n      }\n  ]\n}",
           "type": "json"
         }
       ]
     },
     "error": {
       "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
         {
           "title": "Error Response-1",
           "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CC-GCH-1\",\n  \"errorType\": \"UnknownError\"\n}",
@@ -188,13 +193,18 @@ define({ "api": [
       "examples": [
         {
           "title": "Success Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully retrieved the cart data!!!\",\n  \"data\": [\n      {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n  ]\n}",
+          "content": " HTTP/1.1 200 OK\n {\n   \"error\": false,\n   \"message\": \"Successfully retrieved the cart data!!!\",\n   \"data\": [\n       {\n           \"item\": \"Motorola Moto X4\",\n           \"quantity\": 12,\n           \"activeStatus\": \"active\",\n           \"sku\": 104,\n           \"id\": \"RuU2xqFVI\"\n       },\n       {\n           \"item\": \"Adidas walking shoes\",\n           \"quantity\": 4,\n           \"activeStatus\": \"active\",\n           \"sku\": 105,\n           \"id\": \"eulweKj-7\"\n       }\n   ]\n}",
           "type": "json"
         }
       ]
     },
     "error": {
       "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "type": "json"
+        },
         {
           "title": "Error Response-1",
           "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CC-GAC-1\",\n  \"errorType\": \"UnknownError\"\n}",
@@ -232,7 +242,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "product",
+            "field": "productId",
             "description": "<p>Product Id (Id generated while creating the product)</p>"
           },
           {
@@ -258,27 +268,32 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error Response-1",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You cannot add more than 25 products to cart at once.\",\n  \"errorCode\": \"CC-UCI-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"There are only X products left in stock and you cannot add more than that\",\n  \"errorCode\": \"CC-UCI-2\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"CC-UCI-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Unable to update the item\",\n  \"errorCode\": \"CC-UCI-3\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You cannot add more than 25 products to cart at once.\",\n  \"errorCode\": \"CC-UCI-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"CC-UCI-4\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"There are only X products left in stock and you cannot add more than that\",\n  \"errorCode\": \"CC-UCI-2\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-5",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Unable to update the item\",\n  \"errorCode\": \"CC-UCI-3\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-6",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CC-UCI-4\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -346,22 +361,27 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"CTC-CGE-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"CTC-CGE-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"A category already exists with the given name. Use the existing one or create different one\",\n  \"errorCode\": \"CTC-CGE-3\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to perform this operation\",\n  \"errorCode\": \"Ca-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Provided Parent Category Not Found\",\n  \"errorCode\": \"CTC-CPCV-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"A category already exists with the given name. Use the existing one or create different one\",\n  \"errorCode\": \"CTC-CGE-2\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-4",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Provided Parent Category Not Found\",\n  \"errorCode\": \"CTC-CPCV-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         }
       ]
@@ -401,23 +421,23 @@ define({ "api": [
     "error": {
       "examples": [
         {
-          "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"CTC-DC-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
-          "title": "Error Response-2",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CTC-DC-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found to Delete\",\n  \"errorCode\": \"CTC-DC-3\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found to Delete\",\n  \"errorCode\": \"CTC-DC-1\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"CTC-DC-4\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CTC-DC-4\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -478,27 +498,27 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You Must specify a name for category\",\n  \"errorCode\": \"CTC-CGE-3\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"No Category present with the provided slugname\",\n  \"errorCode\": \"CTC-CGE-5\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CTC-CGE-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"CTC-CCE-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"CTC-CGE-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"No Category present with the provided slugname\",\n  \"errorCode\": \"CTC-CCE-3\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-5",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Parent Category Not Found\",\n  \"errorCode\": \"CTC-CPCV-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Parent Category Not Found\",\n  \"errorCode\": \"CTC-CPCV-1\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         }
       ]
@@ -513,19 +533,6 @@ define({ "api": [
     "title": "Get All Categories",
     "name": "getCategories",
     "group": "Category",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>Authorization Token prepended with (Bearer )</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "examples": [
         {
@@ -539,12 +546,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"CTC-CGE-2\",\n  \"errorType\": \"OAuthError\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error Response-2",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"CTC-GC-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         }
       ]
@@ -631,7 +633,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success Response",
-          "content": "HTTP/1.1 201 Created\n{\n  \"error\": false,\n  \"message\": \"Successfully Added to Inventory\",\n  \"data\": {\n      \"_id\": \"9jK8YXA5n\",\n      \"name\": \"Adidas Casual Walking\",\n      \"slugname\": \"adidas-casual-walking\",\n      \"sku\": 108,\n      \"description\": \"Adidas Casual Walking Sandals\",\n      \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n      \"category\": \"5b99579666f6360394aee7d6\",\n      \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n      \"price\": {\n          \"originalPrice\" : 1500,\n          \"offerPrice\": 1500,\n          \"currency\": \"INR\"\n       },\n      \"meta\": {\n          \"color\" : \"black\",\n          \"dimensions\": \"42 CM\",\n          \"madeIn\": \"India\"\n       },\n      \"__v\": 0\n   }\n}",
+          "content": "HTTP/1.1 201 Created\n{\n  \"error\": false,\n  \"message\": \"Item Successfully Added to Inventory\",\n  \"data\": {\n      \"_id\": \"5ba60e39682c07227c7495d8\",\n      \"availableStock\": 250,\n      \"product\": \"9jK8YXA5n\",\n      \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n      \"catalogId\": 6,\n      \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n      \"__v\": 0\n   }\n}",
           "type": "json"
         }
       ]
@@ -640,22 +642,22 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"IC-CPEIS-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 401 NOT AUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error Response-3",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Product Already Exists In Inventory. Update It Instead Of Adding Again!!!\",\n  \"errorCode\": \"IC-CPEIS-3\",\n  \"errorType\": \"dataExistanceError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"IC-CPEIS-5\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"DataValidationError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-5",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Product Already Exists In Inventory. Update It Instead Of Adding Again!!!\",\n  \"errorCode\": \"IC-CPEIS-3\",\n  \"errorType\": \"DataExistanceError\"\n}",
           "type": "json"
         }
       ]
@@ -727,8 +729,8 @@ define({ "api": [
   {
     "version": "1.0.0",
     "type": "put",
-    "url": "/api/product/edit/:id",
-    "title": "Edit a product by its ID",
+    "url": "/api/inventory/edit/:id",
+    "title": "Edit a product in inventory by productId",
     "name": "editInventoryItem",
     "group": "Inventory",
     "header": {
@@ -784,32 +786,32 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"IC-CPEIS-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"IC-CPEIS-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need Admin previliges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Id Provided\",\n  \"errorCode\": \"VIP-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"VIP-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Product Does Not Exist In Inventory. Add It Before Updating It\",\n  \"errorCode\": \"IC-CPEIS-4\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Product Does Not Exist In Inventory. Add It Before Updating It\",\n  \"errorCode\": \"IC-CPEIS-4\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-5",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Unable to Update the Inventory\",\n  \"errorCode\": \"IC-UIBI-1\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Unable to Update the Inventory\",\n  \"errorCode\": \"IC-UIBI-1\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-6",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"IC-UIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"IC-UIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -828,7 +830,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Fetched!!!\",\n  \"data\": [\n      {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n  ]\n}",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Fetched!!!\",\n  \"data\": [\n      {\n        \"_id\": \"5ba60e39682c07227c7495d8\",\n        \"availableStock\": 250,\n        \"product\": {\n               \"_id\":\"RuU2xqFVI\",\n               \"name\": \"Motorola X4\",\n               \"description\": \"A powerful smartphone under mid range that features great specs\",\n               \"slugname\": \"motorola-x4\",\n               \"category\":\"5b9959b484b5fe047c1eed40\",\n               \"createdBy\":\"5b9959b484b5fe047c1eed40\",\n               \"sku\": 104,\n               \"createdDate\": \"2018-09-16T12:08:52.000Z\",\n               \"price\": {\n                    \"originalPrice\" : 22000,\n                    \"offerPrice\": 22000,\n                    \"currency\": \"INR\"\n                },\n                \"meta\": {\n                    \"color\" : \"black\",\n                    \"dimensions\": \"5.2 inch\",\n                    \"madeIn\": \"India\"\n                },\n          },\n        \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n        \"catalogId\": 6,\n        \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n        \"__v\": 0\n      }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -838,6 +840,39 @@ define({ "api": [
         {
           "title": "Error Response-1",
           "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"IC-GAI-1\",\n  \"errorType\": \"UnknownError\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/inventory-routes.js",
+    "groupTitle": "Inventory"
+  },
+  {
+    "version": "1.0.0",
+    "type": "get",
+    "url": "/api/inventory/:productId",
+    "title": "Get Inventory Details By Product Id",
+    "name": "getInventoryByProductId",
+    "group": "Inventory",
+    "success": {
+      "examples": [
+        {
+          "title": "Success Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Fetched!!!\",\n  \"data\": {\n        \"_id\": \"5ba60e39682c07227c7495d8\",\n        \"availableStock\": 250,\n        \"product\": {\n               \"_id\":\"RuU2xqFVI\",\n               \"name\": \"Motorola X4\",\n               \"description\": \"A powerful smartphone under mid range that features great specs\",\n               \"slugname\": \"motorola-x4\",\n               \"category\":\"5b9959b484b5fe047c1eed40\",\n               \"createdBy\":\"5b9959b484b5fe047c1eed40\",\n               \"sku\": 104,\n               \"createdDate\": \"2018-09-16T12:08:52.000Z\",\n               \"price\": {\n                    \"originalPrice\" : 22000,\n                    \"offerPrice\": 22000,\n                    \"currency\": \"INR\"\n                },\n                \"meta\": {\n                    \"color\" : \"black\",\n                    \"dimensions\": \"5.2 inch\",\n                    \"madeIn\": \"India\"\n                },\n          },\n        \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n        \"catalogId\": 6,\n        \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n        \"__v\": 0\n      }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Error Response-1",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Inventory Stock Found with The Provided Id\",\n  \"errorCode\": \"IC-GIBI-1\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-2",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"IC-GIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -961,22 +996,27 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"PC-CP-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"PC-CP-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"PC-GCI-2\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"Invalid Request\",\n  \"errorCode\": \"PC-CP-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"PC-GCI-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"PC-GCI-1\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error Response-5",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"PC-GCI-2\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -1017,22 +1057,22 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"PC-CPE-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"PC-CPE-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Product Found With The Requested Id\",\n  \"errorCode\": \"PC-CPE-4\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Product Found With The Requested Id\",\n  \"errorCode\": \"PC-CPE-2\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"An Unknown Error Occured\",\n  \"errorCode\": \"PC-DP-3\",\n  \"errorType\": \"UnknownError\"\n}",
+          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"PC-DP-3\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
@@ -1076,6 +1116,13 @@ define({ "api": [
             "optional": false,
             "field": "description",
             "description": "<p>Product Description</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category",
+            "description": "<p>Product Category</p>"
           }
         ]
       }
@@ -1093,27 +1140,27 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"PC-CPE-1\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"Authentication Failed\",\n  \"errorCode\": \"CA-1\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-2",
-          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to create/modify a category\",\n  \"errorCode\": \"PC-CPE-2\",\n  \"errorType\": \"OAuthError\"\n}",
+          "content": "HTTP/1.1 401 UNAUTHORIZED\n{\n  \"error\": true,\n  \"message\": \"You need admin previleges to perform this operation\",\n  \"errorCode\": \"CA-2\",\n  \"errorType\": \"OAuthError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-3",
-          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"A Valid Id Must Be Supplied To Edit A Product\",\n  \"errorCode\": \"PC-CPE-3\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 400 BAD REQUEST\n{\n  \"error\": true,\n  \"message\": \"A Valid Id Must Be Supplied To Edit A Product\",\n  \"errorCode\": \"PC-CPE-1\",\n  \"errorType\": \"DataValidationError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-4",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Product Found With The Requested Id\",\n  \"errorCode\": \"PC-CPE-4\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Product Found With The Requested Id\",\n  \"errorCode\": \"PC-CPE-4\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
           "title": "Error Response-5",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"PC-GCI-1\",\n  \"errorType\": \"dataValidationError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Provided Category Not Found\",\n  \"errorCode\": \"PC-GCI-1\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {
@@ -1122,46 +1169,13 @@ define({ "api": [
           "type": "json"
         },
         {
-          "title": "Error Response-6",
+          "title": "Error Response-7",
           "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Update Failed\",\n  \"errorCode\": \"PC-UP-3\",\n  \"errorType\": \"UnknownError\"\n}",
           "type": "json"
         }
       ]
     },
     "filename": "./routes/product-routes.js",
-    "groupTitle": "Product"
-  },
-  {
-    "version": "1.0.0",
-    "type": "get",
-    "url": "/api/inventory/:productId",
-    "title": "Get Inventory Details By Product Id",
-    "name": "getInventoryByProductId",
-    "group": "Product",
-    "success": {
-      "examples": [
-        {
-          "title": "Success Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"error\": false,\n  \"message\": \"Successfully Fetched!!!\",\n  \"data\": {\n          \"_id\": \"RuU2xqFVI\",\n          \"name\": \"Motorola X4\",\n          \"slugname\": \"motorola-x4\",\n          \"description\": \"A powerful smartphone under mid range that features great specs\",\n          \"sku\": 104,\n          \"createdBy\": \"5b96adc4744d4e1a38cf2a8a\",\n          \"__v\": 0,\n          \"lastUpdated\": \"2018-09-18T17:39:33.590Z\",\n          \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n          \"price\": {\n              \"originalPrice\" : 22000,\n              \"offerPrice\": 22000,\n              \"currency\": \"INR\"\n          },\n          \"meta\": {\n              \"color\" : \"black\",\n              \"dimensions\": \"5.2 inch\",\n              \"madeIn\": \"India\"\n          },\n          \"category\": {\n              \"_id\" : \"5b9959f60065320fecf91490\",\n              \"name\": \"Footwear\",\n              \"slugname\": \"footwear\",\n              \"description\": \"General Footwear\",\n              \"creator\": \"5b96adc4744d4e1a38cf2a8a\",\n              \"createdDate\": \"2018-09-18T17:08:55.000Z\",\n              \"lastUpdated\": \"2018-09-18T17:08:55.000Z\",\n              \"__v\": 0\n          }\n      }\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "examples": [
-        {
-          "title": "Error Response-1",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"No Inventory Stock Found with The Provided Id\",\n  \"errorCode\": \"IC-GIBI-1\",\n  \"errorType\": \"DataMissingError\"\n}",
-          "type": "json"
-        },
-        {
-          "title": "Error Response-2",
-          "content": "HTTP/1.1 500 INTERNAL SERVER ERROR\n{\n  \"error\": true,\n  \"message\": \"Something went wrong, please try again later...\",\n  \"errorCode\": \"IC-GIBI-2\",\n  \"errorType\": \"UnknownError\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "filename": "./routes/inventory-routes.js",
     "groupTitle": "Product"
   },
   {
@@ -1184,7 +1198,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Error Response-1",
-          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Product Not Found\",\n  \"errorCode\": \"PC-GPBI-1\",\n  \"errorType\": \"DataMissingError\"\n}",
+          "content": "HTTP/1.1 404 NOT FOUND\n{\n  \"error\": true,\n  \"message\": \"Product Not Found\",\n  \"errorCode\": \"PC-GPBI-1\",\n  \"errorType\": \"ItemNotFoundError\"\n}",
           "type": "json"
         },
         {

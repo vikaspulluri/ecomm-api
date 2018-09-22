@@ -5,7 +5,7 @@ const {decodeToken, checkUser, checkPrevilieges} = require('../middleware/check-
 const categoryController = require('../controllers/category-controller');
 
 /**
- * @apiVersion 1.0.0
+ * @apiVersion 1.0.0 
  * 
  * @api {post} /api/category/create Create New Category
  * @apiName createCategory
@@ -34,16 +34,16 @@ const categoryController = require('../controllers/category-controller');
  *           }
  *       }
  *    }
- * @apiErrorExample {json} Error Response-1
+ * * @apiErrorExample {json} Error Response-1
  *    HTTP/1.1 400 BAD REQUEST
  *    {
  *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "CTC-CGE-2",
- *      "errorType": "OAuthError"
- *    }  
- * @apiErrorExample {json} Error Response-2
- *    HTTP/1.1 400 BAD REQUEST
+ *      "message": "Invalid Request",
+ *      "errorCode": "CTC-CGE-1",
+ *      "errorType": "DataValidationError"
+ *    } 
+ * * @apiErrorExample {json} Error Response-2
+ *    HTTP/1.1 401 NOT AUTHORIZED
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
@@ -51,12 +51,20 @@ const categoryController = require('../controllers/category-controller');
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-3
+ *    HTTP/1.1 401 NOT AUTHORIZED
+ *    {
+ *      "error": true,
+ *      "message": "You need admin previleges to perform this operation",
+ *      "errorCode": "Ca-2",
+ *      "errorType": "OAuthError"
+ *    }  
+ * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 400 BAD REQUEST
  *    {
  *      "error": true,
  *      "message": "A category already exists with the given name. Use the existing one or create different one",
- *      "errorCode": "CTC-CGE-3",
- *      "errorType": "dataValidationError"
+ *      "errorCode": "CTC-CGE-2",
+ *      "errorType": "DataValidationError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 400 BAD REQUEST
@@ -64,7 +72,7 @@ const categoryController = require('../controllers/category-controller');
  *      "error": true,
  *      "message": "Provided Parent Category Not Found",
  *      "errorCode": "CTC-CPCV-1",
- *      "errorType": "dataValidationError"
+ *      "errorType": "DataValidationError"
  *    }
  */
 router.post('/create', decodeToken, checkUser, checkPrevilieges, categoryController.checkCategoryExistence('create'), categoryController.checkParentCategoryValidity('create'), categoryController.createCategory);
@@ -75,9 +83,6 @@ router.post('/create', decodeToken, checkUser, checkPrevilieges, categoryControl
  * @api {get} /api/category/all Get All Categories
  * @apiName getCategories
  * @apiGroup Category
- * 
- * @apiHeader {String} authorization Authorization Token prepended with (Bearer )
- * 
  * 
  * 
  * @apiSuccessExample {json} Success Response
@@ -111,20 +116,12 @@ router.post('/create', decodeToken, checkUser, checkPrevilieges, categoryControl
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "CTC-CGE-2",
+ *      "message": "Something went wrong, please try again later...",
+ *      "errorCode": "CTC-GC-1",
  *      "errorType": "OAuthError"
  *    }  
- * @apiErrorExample {json} Error Response-2
- *    HTTP/1.1 401 UNAUTHORIZED
- *    {
- *      "error": true,
- *      "message": "Authentication Failed",
- *      "errorCode": "CA-1",
- *      "errorType": "OAuthError"
- *    }
  */
-router.get('/all', decodeToken, checkUser, checkPrevilieges, categoryController.getCategories);
+router.get('/all', categoryController.getCategories);
 
 /**
  * @apiVersion 1.0.0
@@ -158,37 +155,37 @@ router.get('/all', decodeToken, checkUser, checkPrevilieges, categoryController.
  *          }
  *      ]
  *    }
- * @apiErrorExample {json} Error Response-1
- *    HTTP/1.1 400 BAD REQUEST
- *    {
- *      "error": true,
- *      "message": "You Must specify a name for category",
- *      "errorCode": "CTC-CGE-3",
- *      "errorType": "dataValidationError"
- *    }
- * @apiErrorExample {json} Error Response-2
- *    HTTP/1.1 400 BAD REQUEST
- *    {
- *      "error": true,
- *      "message": "No Category present with the provided slugname",
- *      "errorCode": "CTC-CGE-5",
- *      "errorType": "dataValidationError"
- *    }
- * @apiErrorExample {json} Error Response-3
+ *  * @apiErrorExample {json} Error Response-1
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "CTC-CGE-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
- * @apiErrorExample {json} Error Response-4
+ * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "CTC-CGE-2",
+ *      "message": "You need admin previleges to perform this operation",
+ *      "errorCode": "CA-2",
  *      "errorType": "OAuthError"
+ *    }
+ * @apiErrorExample {json} Error Response-3
+ *    HTTP/1.1 400 BAD REQUEST
+ *    {
+ *      "error": true,
+ *      "message": "Invalid Request",
+ *      "errorCode": "CTC-CCE-1",
+ *      "errorType": "DataValidationError"
+ *    }
+ * @apiErrorExample {json} Error Response-4
+ *    HTTP/1.1 400 BAD REQUEST
+ *    {
+ *      "error": true,
+ *      "message": "No Category present with the provided slugname",
+ *      "errorCode": "CTC-CCE-3",
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-5
  *    HTTP/1.1 404 NOT FOUND
@@ -196,7 +193,7 @@ router.get('/all', decodeToken, checkUser, checkPrevilieges, categoryController.
  *      "error": true,
  *      "message": "Provided Parent Category Not Found",
  *      "errorCode": "CTC-CPCV-1",
- *      "errorType": "dataValidationError"
+ *      "errorType": "ItemNotFoundError"
  *    }
  */
 router.put('/edit/:slugname', decodeToken, checkUser, checkPrevilieges, categoryController.checkCategoryExistence('edit'), categoryController.checkParentCategoryValidity('edit'), categoryController.editCategory);
@@ -218,35 +215,35 @@ router.put('/edit/:slugname', decodeToken, checkUser, checkPrevilieges, category
  *      "message": "Category Successfully Deleted!!!",
  *    }
  * 
- * @apiErrorExample {json} Error Response-1
- *    HTTP/1.1 401 UNAUTHORIZED
- *    {
- *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "CTC-DC-2",
- *      "errorType": "OAuthError"
- *    }  
- * @apiErrorExample {json} Error Response-2
+ *  * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "CTC-DC-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
+ * @apiErrorExample {json} Error Response-1
+ *    HTTP/1.1 401 UNAUTHORIZED
+ *    {
+ *      "error": true,
+ *      "message": "You need admin previleges to perform this operation",
+ *      "errorCode": "CA-2",
+ *      "errorType": "OAuthError"
+ *    }  
  * @apiErrorExample {json} Error Response-3
  *    HTTP/1.1 404 NOT FOUND
  *    {
  *      "error": true,
  *      "message": "Provided Category Not Found to Delete",
- *      "errorCode": "CTC-DC-3",
- *      "errorType": "dataValidationError"
+ *      "errorCode": "CTC-DC-1",
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
- *      "message": "An Unknown Error Occured",
+ *      "message": "Something went wrong, please try again later...",
  *      "errorCode": "CTC-DC-4",
  *      "errorType": "UnknownError"
  *    }

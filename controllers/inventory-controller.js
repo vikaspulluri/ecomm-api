@@ -3,11 +3,11 @@ const Inventory = require('../models/inventory-model');
 const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
 const validateRequest = require('../libraries/validate-request');
 const dateUtility = require('../libraries/date-formatter');
-
+const logger = require('../libraries/log-message');
 
 exports.checkProductExistenceInStock = function(options){
     return (req, res, next) => {
-        let reqValidity = validateRequest(req, 'name');
+        let reqValidity = validateRequest(req, 'product');
         if(reqValidity.includes(false)) {
             let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('IC-CPEIS-1').build();
             return next(error);
@@ -36,14 +36,15 @@ exports.checkProductExistenceInStock = function(options){
                     return next();
                 })
                 .catch(error => {
-                    let err = new ErrorResponseBuilder().errorCode('IC-CPEIS-3').build();
+                    logger.log(error, req, 'IC-CPEIS');
+                    let err = new ErrorResponseBuilder().errorCode('IC-CPEIS-3').status(500).errorType('UnknownError').build();
                     return next(err);
                 })
     }
 }
 
 exports.addItemToInventory = (req, res, next) => {
-    let reqValidity = validateRequest(req, 'productId','availableStock', 'inventoryStatus');
+    let reqValidity = validateRequest(req, 'product','availableStock');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request')
                                         .errorType('DataValidationError')
@@ -53,7 +54,7 @@ exports.addItemToInventory = (req, res, next) => {
         return next(error);
     }
     const data = {
-        product: req.body.productId,
+        product: req.body.product,
         availableStock: req.body.availableStock,
         inventoryStatus: req.body.inventoryStatus,
         creator: req.userData.userId,
@@ -67,13 +68,14 @@ exports.addItemToInventory = (req, res, next) => {
                 return res.status(201).send(jsonResponse)
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('IC-AITI-2').build();
+                logger.log(error, req, 'IC-AITI');
+                let err = new ErrorResponseBuilder().errorCode('IC-AITI-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
 
 exports.updateInventoryById = (req, res, next) => {
-    let reqValidity = validateRequest(req, 'availableStock', 'inventoryStatus');
+    let reqValidity = validateRequest(req, 'availableStock');
     if(reqValidity.includes(false)) {
         let error = new ErrorResponseBuilder('Invalid request')
                                         .errorType('DataValidationError')
@@ -85,7 +87,7 @@ exports.updateInventoryById = (req, res, next) => {
     const updatedObj = {
         product: req.params.id,
         availableStock: req.body.availableStock,
-        inventoryStatus: req.body.inventoryStatus,
+        inventoryStatus: req.body.inventoryStatus || 'active',
         lastModifiedOn: new Date().toLocaleString(),
         lastModifiedBy: req.userData.userId
     };
@@ -95,7 +97,7 @@ exports.updateInventoryById = (req, res, next) => {
                 if(result.n <= 0) {
                     let error = new ErrorResponseBuilder('Unable to Update the Inventory')
                                         .status(404)
-                                        .errorType('ProductNotFoundError')
+                                        .errorType('ItemNotFoundError')
                                         .errorCode('IC-UIBI-2')
                                         .build();
                     return next(error);
@@ -104,7 +106,8 @@ exports.updateInventoryById = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('IC-UIBI-3').build();
+                logger.log(error, req, 'IC-UIBI');
+                let err = new ErrorResponseBuilder().errorCode('IC-UIBI-3').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -125,7 +128,8 @@ exports.deleteInventoryById = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('IC-DIBI-2').build();
+                logger.log(error, req, 'IC-DIBI');
+                let err = new ErrorResponseBuilder().errorCode('IC-DIBI-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -139,13 +143,15 @@ exports.getAllInventory = (req, res, next) => {
                 return res.status(200).send(jsonResponse)
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('IC-GAI-2').build();
+                logger.log(error. req, 'IC-GAI');
+                let err = new ErrorResponseBuilder().errorCode('IC-GAI-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
 
 exports.getInventoryById = (req, res, next) => {
     Inventory.findOne({product: req.params.id})
+            .populate(['product'])
             .exec()
             .then(result => {
                 if(!result) {
@@ -160,7 +166,8 @@ exports.getInventoryById = (req, res, next) => {
                 return res.status('200').send(jsonResponse)
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('IC-GIBI-2').build();
+                logger.log(error, req, 'IC-GIBI');
+                let err = new ErrorResponseBuilder().errorCode('IC-GIBI-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }

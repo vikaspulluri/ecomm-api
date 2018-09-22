@@ -8,7 +8,7 @@ const productSchema = mongoose.Schema({
     sku: {type: Number, unique: true},
     slugname: {type: String},
     price: {
-        originalPrice: {type: Number, required: true},
+        originalPrice: {type: Number},
         offerPrice: {type: Number},
         currency: {type: String}
     },

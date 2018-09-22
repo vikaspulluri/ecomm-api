@@ -4,6 +4,7 @@ const shortId = require('shortid');
 const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/response-builder');
 const validateRequest = require('../libraries/validate-request');
 const dateUtility = require('../libraries/date-formatter');
+const logger = require('../libraries/log-message');
 
 exports.checkInventoryAvailability = (req, res, next) => {
     if(!req.body.productId || !shortId.isValid(req.body.productId)) {
@@ -30,7 +31,8 @@ exports.checkInventoryAvailability = (req, res, next) => {
                 return next();
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CC-CIA-2').build();
+                logger.log(error, req, 'CC-CIA');
+                let err = new ErrorResponseBuilder().errorCode('CC-CIA-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -92,8 +94,8 @@ exports.addItem2Cart = (req, res, next) => {
             .then(result => {
                 if(result.n <= 0) {
                     let error = new ErrorResponseBuilder('Unable To Add The Item To Cart')
-                                        .status(404)
-                                        .errorType('ProductNotFoundError')
+                                        .status(500)
+                                        .errorType('UnknownError')
                                         .errorCode('CC-AI2C-5')
                                         .build();
                     return next(error);
@@ -102,7 +104,8 @@ exports.addItem2Cart = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CC-AI2C-6').build();
+                logger.log(error, req, 'CC-AI2C');
+                let err = new ErrorResponseBuilder().errorCode('CC-AI2C-6').status(500).errorType('UnknownError').build();
                 return next(err);
             })
     } else {
@@ -114,7 +117,8 @@ exports.addItem2Cart = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CC-AI2C-6').build();
+                logger.log(error, req, 'CC-AI2C');
+                let err = new ErrorResponseBuilder().errorCode('CC-AI2C-6').status(500).errorType('UnknownError').build();
                 return next(err);
             })
     }
@@ -123,26 +127,56 @@ exports.addItem2Cart = (req, res, next) => {
 
 exports.getActiveCart = (req, res, next) => {
     Cart.find({user: req.userData.userId, activeStatus: 'active'})
+        .populate(['item'])
         .exec()
         .then(result => {
-            let jsonResponse = new SuccessResponseBuilder('Successfully retrieved the cart data!!!').data(result).build();
+            let data = [];
+            if(result) {
+              data = result.map((cartItem) => {    
+                let obj = {};
+                    obj.item = cartItem.item.name;
+                    obj.id = cartItem.item._id;
+                    obj.quantity = cartItem.quantity;
+                    //obj.activeDuration = dateUtility.duration(new Date(cartItem.createdDate));
+                    obj.sku = cartItem.item.sku;
+                    obj.activeStatus = cartItem.activeStatus;
+                    return obj;
+                })
+            }
+            let jsonResponse = new SuccessResponseBuilder('Successfully retrieved the cart data!!!').data(data).build();
             return res.status(200).send(jsonResponse)
         })
         .catch(error => {
-            let err = new ErrorResponseBuilder().errorCode('CC-GAC-1').build();
+            logger.log(error, req, 'CC-GAC');
+            let err = new ErrorResponseBuilder().errorCode('CC-GAC-1').status(500).errorType('UnknownError').build();
             return next(err);
         })
 }
 
 exports.getCartHistory = (req, res, next) => {
     Cart.find({user: req.userData.userId, activeStatus: 'inactive'})
+        .populate(['item'])
         .exec()
         .then(result => {
+            let data = [];
+            if(result) {
+              data = result.map((cartItem) => {    
+                let obj = {};
+                    obj.item = cartItem.item.name;
+                    obj.id = cartItem.item._id;
+                    obj.quantity = cartItem.quantity;
+                    //obj.activeDuration = dateUtility.duration(new Date(cartItem.createdDate));
+                    obj.sku = cartItem.item.sku;
+                    obj.activeStatus = cartItem.activeStatus;
+                    return obj;
+                })
+            }
             let jsonResponse = new SuccessResponseBuilder('Successfully retrieved the cart data!!!').data(result).build();
             return res.status(200).send(jsonResponse)
         })
         .catch(error => {
-            let err = new ErrorResponseBuilder().errorCode('CC-GCH-1').build();
+            logger.log(error, req, 'CC-GCH');
+            let err = new ErrorResponseBuilder().errorCode('CC-GCH-1').status(500).errorType('UnknownError').build();
             return next(err);
         })
 }
@@ -175,35 +209,41 @@ exports.updateCartItem = (req, res, next) => {
     const item = {
         item: req.body.productId,
         quantity: req.body.quantity,
-        activeDuration: new Date().toDateString()
+        activeDuration: dateUtility.formatDate()
     };
     Cart.updateOne({item: req.body.productId, user: req.userData.userId}, item, {new: true})
         .then(result => {
             if(result.n <= 0) {
                 let error = new ErrorResponseBuilder('Unable To Update The Item To Cart')
                                         .status(404)
-                                        .errorType('ProductNotFoundError')
+                                        .errorType('ItemNotFoundError')
                                         .errorCode('CC-UCI-3')
                                         .build();
                 return next(error);
             }
-            let jsonResponse = new SuccessResponseBuilder('Item Added To Cart Successfully!!!').build();
+            let jsonResponse = new SuccessResponseBuilder('Item Updated Successfully!!!').build();
             return res.status(200).send(jsonResponse);
         })
         .catch(error => {
-            let err = new ErrorResponseBuilder().errorCode('CC-UCI-4').build();
+            logger.log(error, req, 'CC-UCI');
+            let err = new ErrorResponseBuilder().errorCode('CC-UCI-4').status(500).errorType('UnknownError').build();
             return next(err);
         })
 }
 
 exports.deleteCartItem = (req, res, next) => {
-    Cart.updateOne({user: req.userData.userId, item: req.body.productId},{activeStatus: 'inactive', quantity: 0, activeDuration: new Date().toDateString()})
+    let reqValidity = validateRequest(req, 'productId');
+    if(reqValidity.includes(false)) {
+        let error = new ErrorResponseBuilder('Invalid request').errorType('DataValidationError').status(400).errorCode('CC-DCI-1').build();
+        return next(error);
+    }
+    Cart.updateOne({user: req.userData.userId, item: req.body.productId, activeStatus:'active'},{activeStatus: 'inactive', quantity: 0, activeDuration: dateUtility.formatDate()})
         .exec()
         .then(result => {
-            if(result.n > 0) {
-                let error = new ErrorResponseBuilder('Unable To Update The Item To Cart')
+            if(result.n <= 0) {
+                let error = new ErrorResponseBuilder('Unable To Delete The Item From Cart')
                                         .status(404)
-                                        .errorType('ProductNotFoundError')
+                                        .errorType('ItemNotFoundError')
                                         .errorCode('CC-DCI-1')
                                         .build();
                 return next(error);
@@ -212,7 +252,8 @@ exports.deleteCartItem = (req, res, next) => {
             return res.status(200).send(jsonResponse)
         })
         .catch(error => {
-            let err = new ErrorResponseBuilder().errorCode('CC-DCI-2').build();
+            logger.log(error, req, 'CC-DCI');
+            let err = new ErrorResponseBuilder().errorCode('CC-DCI-2').status(500).errorType('UnknownError').build();
             return next(err);
         })
 }

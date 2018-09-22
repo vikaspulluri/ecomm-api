@@ -6,6 +6,13 @@
     "url" : "",
     "author": "Vikas Pulluri",
     "created": "17-09-2018",
+    "order": [
+      "User",
+      "Category",
+      "Product",
+      "Inventory",
+      "Cart"
+    ],
     "template": {
       "forceLanguage": "en"
     }

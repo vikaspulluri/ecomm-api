@@ -54,29 +54,29 @@ const productController = require('../controllers/product-controller');
  *          "__v": 0
  *       }
  *    }
- * @apiErrorExample {json} Error Response-1
- *    HTTP/1.1 400 BAD REQUEST
- *    {
- *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "PC-CP-2",
- *      "errorType": "OAuthError"
- *    }  
- * @apiErrorExample {json} Error Response-2
- *    HTTP/1.1 400 BAD REQUEST
+ * * @apiErrorExample {json} Error Response-1
+ *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "PC-CP-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
- * @apiErrorExample {json} Error Response-3
- *    HTTP/1.1 500 INTERNAL SERVER ERROR
+ * @apiErrorExample {json} Error Response-2
+ *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
- *      "message": "Something went wrong, please try again later...",
- *      "errorCode": "PC-GCI-2",
- *      "errorType": "UnknownError"
+ *      "message": "You need admin previleges to perform this operation",
+ *      "errorCode": "CA-2",
+ *      "errorType": "OAuthError"
+ *    }
+ * * @apiErrorExample {json} Error Response-3
+ *    HTTP/1.1 400 BAD REQUEST
+ *    {
+ *      "error": true,
+ *      "message": "Invalid Request",
+ *      "errorCode": "PC-CP-1",
+ *      "errorType": "DataValidationError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 404 NOT FOUND
@@ -84,7 +84,15 @@ const productController = require('../controllers/product-controller');
  *      "error": true,
  *      "message": "Provided Category Not Found",
  *      "errorCode": "PC-GCI-1",
- *      "errorType": "dataValidationError"
+ *      "errorType": "ItemNotFoundError"
+ *    }  
+ * @apiErrorExample {json} Error Response-5
+ *    HTTP/1.1 500 INTERNAL SERVER ERROR
+ *    {
+ *      "error": true,
+ *      "message": "Something went wrong, please try again later...",
+ *      "errorCode": "PC-GCI-2",
+ *      "errorType": "UnknownError"
  *    }
  */
 router.post('/create', decodeToken, checkUser, checkPrevilieges, productController.getCategoryId, productController.createProduct);
@@ -196,7 +204,7 @@ router.get('/all', productController.getProducts);
  *      "error": true,
  *      "message": "Product Not Found",
  *      "errorCode": "PC-GPBI-1",
- *      "errorType": "DataMissingError"
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
@@ -220,6 +228,7 @@ router.get('/:id', productController.getProductById);
  * 
  * @apiParam {String} name Product Name
  * @apiParam {String} description Product Description
+ * @apiParam {String} category Product Category
  * 
  * @apiSuccessExample {json} Success Response
  *    HTTP/1.1 200 OK
@@ -246,15 +255,15 @@ router.get('/:id', productController.getProductById);
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "PC-CPE-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "PC-CPE-2",
+ *      "message": "You need admin previleges to perform this operation",
+ *      "errorCode": "CA-2",
  *      "errorType": "OAuthError"
  *    }
  * * @apiErrorExample {json} Error Response-3
@@ -262,8 +271,8 @@ router.get('/:id', productController.getProductById);
  *    {
  *      "error": true,
  *      "message": "A Valid Id Must Be Supplied To Edit A Product",
- *      "errorCode": "PC-CPE-3",
- *      "errorType": "dataValidationError"
+ *      "errorCode": "PC-CPE-1",
+ *      "errorType": "DataValidationError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 404 NOT FOUND
@@ -271,7 +280,7 @@ router.get('/:id', productController.getProductById);
  *      "error": true,
  *      "message": "No Product Found With The Requested Id",
  *      "errorCode": "PC-CPE-4",
- *      "errorType": "DataMissingError"
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-5
  *    HTTP/1.1 404 NOT FOUND
@@ -279,7 +288,7 @@ router.get('/:id', productController.getProductById);
  *      "error": true,
  *      "message": "Provided Category Not Found",
  *      "errorCode": "PC-GCI-1",
- *      "errorType": "dataValidationError"
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-6
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
@@ -289,7 +298,7 @@ router.get('/:id', productController.getProductById);
  *      "errorCode": "PC-CPE-5",
  *      "errorType": "UnknownError"
  *    }
- *  @apiErrorExample {json} Error Response-6
+ *  @apiErrorExample {json} Error Response-7
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
@@ -321,15 +330,15 @@ router.put('/edit/:id', decodeToken, checkUser, checkPrevilieges, productControl
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "PC-CPE-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
- *      "message": "You need admin previleges to create/modify a category",
- *      "errorCode": "PC-CPE-2",
+ *      "message": "You need admin previleges to perform this operation",
+ *      "errorCode": "CA-2",
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-3
@@ -337,14 +346,14 @@ router.put('/edit/:id', decodeToken, checkUser, checkPrevilieges, productControl
  *    {
  *      "error": true,
  *      "message": "No Product Found With The Requested Id",
- *      "errorCode": "PC-CPE-4",
- *      "errorType": "DataMissingError"
+ *      "errorCode": "PC-CPE-2",
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
- *      "message": "An Unknown Error Occured",
+ *      "message": "Something went wrong, please try again later...",
  *      "errorCode": "PC-DP-3",
  *      "errorType": "UnknownError"
  *    }

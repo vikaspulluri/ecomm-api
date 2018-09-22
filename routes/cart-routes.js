@@ -13,7 +13,7 @@ const cartController = require('../controllers/cart-controller');
  * 
  * @apiHeader {String} authorization Authorization Token prepended with (Bearer )
  * 
- * @apiParam {String} product Product Id (Id generated while creating the product)
+ * @apiParam {String} productId Product Id (Id generated while creating the product)
  * @apiParam {String} quantity Number of products to be added
  * 
  * 
@@ -24,11 +24,11 @@ const cartController = require('../controllers/cart-controller');
  *      "message": "Item Added To Cart Successfully!!!",
  *    }  
  * @apiErrorExample {json} Error Response-1
- *    HTTP/1.1 401 NOT AUTHORIZED
+ *    HTTP/1.1 401 UNAUTHORIZED
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "IC-CPEIS-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-2
@@ -36,7 +36,7 @@ const cartController = require('../controllers/cart-controller');
  *    {
  *      "error": true,
  *      "message": "You Cannot Add More Than 25 Products To Cart At Once",
- *      "errorCode": "CC-AI2C-1",
+ *      "errorCode": "CA-2",
  *      "errorType": "DataValidationError"
  *    }
  * @apiErrorExample {json} Error Response-3
@@ -45,7 +45,7 @@ const cartController = require('../controllers/cart-controller');
  *      "error": true,
  *      "message": "The Product is Either Inactive Or Running Out Of Stock",
  *      "errorCode": "CC-AI2C-2",
- *      "errorType": "DataMissingError"
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 400 BAD REQUEST
@@ -55,20 +55,12 @@ const cartController = require('../controllers/cart-controller');
  *      "errorCode": "CC-AI2C-3",
  *      "errorType": "DataValidationError"
  *    }
- * * @apiErrorExample {json} Error Response-4
- *    HTTP/1.1 400 BAD REQUEST
+ * * @apiErrorExample {json} Error Response-5
+ *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
  *      "message": "Unable To Add The Item To Cart",
  *      "errorCode": "CC-AI2C-4",
- *      "errorType": "UnknownError"
- *    }
- * @apiErrorExample {json} Error Response-4
- *    HTTP/1.1 500 INTERNAL SERVER ERROR
- *    {
- *      "error": true,
- *      "message": "Provided Category Not Found",
- *      "errorCode": "CC-AI2C-5",
  *      "errorType": "UnknownError"
  *    }
  */
@@ -92,38 +84,29 @@ router.post('/add', decodeToken,
  *      "message": "Successfully retrieved the cart data!!!",
  *      "data": [
  *          {
- *              "_id": "RuU2xqFVI",
- *              "name": "Motorola X4",
- *              "slugname": "motorola-x4",
- *              "description": "A powerful smartphone under mid range that features great specs",
+ *              "item": "Motorola Moto X4",
+ *              "quantity": 12,
+ *              "activeStatus": "active",
  *              "sku": 104,
- *              "createdBy": "5b96adc4744d4e1a38cf2a8a",
- *              "__v": 0,
- *              "lastUpdated": "2018-09-18T17:39:33.590Z",
- *              "createdDate": "2018-09-18T17:08:55.000Z",
- *              "price": {
- *                  "originalPrice" : 22000,
- *                  "offerPrice": 22000,
- *                  "currency": "INR"
- *              },
- *              "meta": {
- *                  "color" : "black",
- *                  "dimensions": "5.2 inch",
- *                  "madeIn": "India"
- *              },
- *              "category": {
- *                  "_id" : "5b9959f60065320fecf91490",
- *                  "name": "Footwear",
- *                  "slugname": "footwear",
- *                  "description": "General Footwear",
- *                  "creator": "5b96adc4744d4e1a38cf2a8a",
- *                  "createdDate": "2018-09-18T17:08:55.000Z",
- *                  "lastUpdated": "2018-09-18T17:08:55.000Z",
- *                  "__v": 0
- *              }
+ *              "id": "RuU2xqFVI"
+ *          },
+ *          {
+ *              "item": "Adidas walking shoes",
+ *              "quantity": 4,
+ *              "activeStatus": "active",
+ *              "sku": 105,
+ *              "id": "eulweKj-7"
  *          }
  *      ]
- *    } 
+ *   }
+ *  * @apiErrorExample {json} Error Response-1
+ *    HTTP/1.1 401 UNAUTHORIZED
+ *    {
+ *      "error": true,
+ *      "message": "Authentication Failed",
+ *      "errorCode": "CA-1",
+ *      "errorType": "OAuthError"
+ *    }
  * @apiErrorExample {json} Error Response-1
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
@@ -149,38 +132,29 @@ router.get('/info', decodeToken, checkUser, cartController.getActiveCart);
  *      "message": "Successfully retrieved the cart data!!!",
  *      "data": [
  *          {
- *              "_id": "RuU2xqFVI",
- *              "name": "Motorola X4",
- *              "slugname": "motorola-x4",
- *              "description": "A powerful smartphone under mid range that features great specs",
+ *              "item": "Motorola Moto X4",
+ *              "quantity": 12,
+ *              "activeStatus": "inactive",
  *              "sku": 104,
- *              "createdBy": "5b96adc4744d4e1a38cf2a8a",
- *              "__v": 0,
- *              "lastUpdated": "2018-09-18T17:39:33.590Z",
- *              "createdDate": "2018-09-18T17:08:55.000Z",
- *              "price": {
- *                  "originalPrice" : 22000,
- *                  "offerPrice": 22000,
- *                  "currency": "INR"
- *              },
- *              "meta": {
- *                  "color" : "black",
- *                  "dimensions": "5.2 inch",
- *                  "madeIn": "India"
- *              },
- *              "category": {
- *                  "_id" : "5b9959f60065320fecf91490",
- *                  "name": "Footwear",
- *                  "slugname": "footwear",
- *                  "description": "General Footwear",
- *                  "creator": "5b96adc4744d4e1a38cf2a8a",
- *                  "createdDate": "2018-09-18T17:08:55.000Z",
- *                  "lastUpdated": "2018-09-18T17:08:55.000Z",
- *                  "__v": 0
- *              }
+ *              "id": "RuU2xqFVI"
+ *          },
+ *          {
+ *              "item": "Adidas walking shoes",
+ *              "quantity": 4,
+ *              "activeStatus": "inactive",
+ *              "sku": 105,
+ *              "id": "eulweKj-7"
  *          }
  *      ]
- *    } 
+ *    }
+ *  * @apiErrorExample {json} Error Response-1
+ *    HTTP/1.1 401 UNAUTHORIZED
+ *    {
+ *      "error": true,
+ *      "message": "Authentication Failed",
+ *      "errorCode": "CA-1",
+ *      "errorType": "OAuthError"
+ *    }
  * @apiErrorExample {json} Error Response-1
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
@@ -202,7 +176,7 @@ router.get('/history', decodeToken, checkUser, cartController.getCartHistory);
  * 
  * @apiHeader {String} authorization Authorization Token prepended with (Bearer )
  * 
- * @apiParam {String} product Product Id (Id generated while creating the product)
+ * @apiParam {String} productId Product Id (Id generated while creating the product)
  * @apiParam {String} quantity Number of products to be added to cart
  * 
  * @apiSuccessExample {json} Success Response
@@ -216,38 +190,46 @@ router.get('/history', decodeToken, checkUser, cartController.getCartHistory);
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "IC-CPEIS-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
- * * @apiErrorExample {json} Error Response-1
+ *  * * @apiErrorExample {json} Error Response-2
  *    HTTP/1.1 400 BAD REQUEST
  *    {
  *      "error": true,
- *      "message": "You cannot add more than 25 products to cart at once.",
+ *      "message": "Invalid Request",
  *      "errorCode": "CC-UCI-1",
- *      "errorType": "dataValidationError"
- *    }
- * @apiErrorExample {json} Error Response-2
- *    HTTP/1.1 400 BAD REQUEST
- *    {
- *      "error": true,
- *      "message": "There are only X products left in stock and you cannot add more than that",
- *      "errorCode": "CC-UCI-2",
- *      "errorType": "DataMissingError"
+ *      "errorType": "DataValidationError"
  *    }
  * * @apiErrorExample {json} Error Response-3
  *    HTTP/1.1 400 BAD REQUEST
  *    {
  *      "error": true,
- *      "message": "Unable to update the item",
- *      "errorCode": "CC-UCI-3",
- *      "errorType": "DataMissingError"
+ *      "message": "You cannot add more than 25 products to cart at once.",
+ *      "errorCode": "CC-UCI-1",
+ *      "errorType": "DataValidationError"
  *    }
  * @apiErrorExample {json} Error Response-4
+ *    HTTP/1.1 400 BAD REQUEST
+ *    {
+ *      "error": true,
+ *      "message": "There are only X products left in stock and you cannot add more than that",
+ *      "errorCode": "CC-UCI-2",
+ *      "errorType": "DataValidationError"
+ *    }
+ * * @apiErrorExample {json} Error Response-5
+ *    HTTP/1.1 404 NOT FOUND
+ *    {
+ *      "error": true,
+ *      "message": "Unable to update the item",
+ *      "errorCode": "CC-UCI-3",
+ *      "errorType": "ItemNotFoundError"
+ *    }
+ * @apiErrorExample {json} Error Response-6
  *    HTTP/1.1 500 INTERNAL SERVER ERROR
  *    {
  *      "error": true,
- *      "message": "An Unknown Error Occured",
+ *      "message": "Something went wrong, please try again later...",
  *      "errorCode": "CC-UCI-4",
  *      "errorType": "UnknownError"
  *    }
@@ -255,7 +237,7 @@ router.get('/history', decodeToken, checkUser, cartController.getCartHistory);
 router.put('/update', decodeToken,
                     checkUser,
                     cartController.checkInventoryAvailability,
-                    cartController.updateCartItem,);
+                    cartController.updateCartItem);
 
 /**
  * @apiVersion 1.0.0
@@ -266,7 +248,7 @@ router.put('/update', decodeToken,
  * 
  * @apiHeader {String} authorization Authorization Token prepended with (Bearer )
  * 
- * @apiParam {String} product Product Id (Id generated while creating the product)
+ * @apiParam {String} productId Product Id (Id generated while creating the product)
  * 
  * @apiSuccessExample {json} Success Response
  *    HTTP/1.1 200 OK
@@ -279,16 +261,24 @@ router.put('/update', decodeToken,
  *    {
  *      "error": true,
  *      "message": "Authentication Failed",
- *      "errorCode": "CC-DCI-1",
+ *      "errorCode": "CA-1",
  *      "errorType": "OAuthError"
  *    }
  * @apiErrorExample {json} Error Response-2
+ *    HTTP/1.1 400 BAD REQUEST
+ *    {
+ *      "error": true,
+ *      "message": "Invalid Request",
+ *      "errorCode": "CC-DCI-1",
+ *      "errorType": "DataValidationError"
+ *    }
+ * @apiErrorExample {json} Error Response-3
  *    HTTP/1.1 404 NOT FOUND
  *    {
  *      "error": true,
  *      "message": "Unable to delete the Item",
  *      "errorCode": "CC-DCI-2",
- *      "errorType": "DataMissingError"
+ *      "errorType": "ItemNotFoundError"
  *    }
  * @apiErrorExample {json} Error Response-4
  *    HTTP/1.1 500 INTERNAL SERVER ERROR

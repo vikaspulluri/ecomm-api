@@ -17,7 +17,7 @@ module.exports = function(model, field) {
                 return next();
              })
              .catch(error => {
-                let response = new ErrorResponseBuilder(config.messages.errors.unknown).errorCode('UV-2').build();
+                let response = new ErrorResponseBuilder(config.messages.errors.unknown).status(500).errorType('UnknownError').errorCode('UV-2').build();
                 return next(response);
             })
     }

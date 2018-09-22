@@ -31,7 +31,7 @@ const checkUser = (req, res, next) => {
 
 const checkPrevilieges = (req, res, next) => {
   if(!req.userData.isAdmin){
-    let error = new ErrorResponseBuilder('You need admin previleges to create/modify a category')
+    let error = new ErrorResponseBuilder('You need admin previleges to perform this operation')
                                 .status(401)
                                 .errorType('OAuthError')
                                 .errorCode('CA-3')

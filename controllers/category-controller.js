@@ -2,6 +2,7 @@ const {ErrorResponseBuilder, SuccessResponseBuilder} = require('../libraries/res
 const Category = require('../models/category-model');
 const validateRequest = require('../libraries/validate-request');
 const dateUtility = require('../libraries/date-formatter');
+const logger = require('../libraries/log-message');
 
 exports.checkCategoryExistence = function(options){
     return (req, res, next) => {
@@ -21,15 +22,15 @@ exports.checkCategoryExistence = function(options){
                 if(result > 0 && options === 'create') {
                     let error = new ErrorResponseBuilder('A category already exists with the given name. Use the existing one or create different one')
                                         .status(400)
-                                        .errorType('dataValidationError')
-                                        .errorCode('CTC-CGE-2')
+                                        .errorType('DataValidationError')
+                                        .errorCode('CTC-CCE-2')
                                         .build();
                     return next(error);
                 } if(result <= 0 && options === 'edit') {
                     let error = new ErrorResponseBuilder('No Category present with the provided slugname')
-                                        .status(400)
-                                        .errorType('dataValidationError')
-                                        .errorCode('CTC-CGE-3')
+                                        .status(404)
+                                        .errorType('ItemNotFoundError')
+                                        .errorCode('CTC-CCE-3')
                                         .build();
                     return next(error);
                 }
@@ -37,7 +38,8 @@ exports.checkCategoryExistence = function(options){
                 next();
             })
             .catch(error=> {
-                let err = new ErrorResponseBuilder().errorCode('CTC-CGE-4').build();
+                logger.log(error, req, 'CTC-CCE');
+                let err = new ErrorResponseBuilder().errorCode('CTC-CCE-4').status(500).errorType('UnknownError').build();
                 return next(err);
             })
     }
@@ -58,14 +60,15 @@ exports.checkParentCategoryValidity = function(options){
                         return next();
                     }
                     let error = new ErrorResponseBuilder('Provided Parent Category Not Found')
-                                        .status(401)
-                                        .errorType('dataValidationError')
+                                        .status(404)
+                                        .errorType('ItemNotFoundError')
                                         .errorCode('CTC-CPCV-1')
                                         .build();
                     return next(error);
                 })
                 .catch(error => {
-                    let err = new ErrorResponseBuilder().errorCode('CTC-CPCV-2').build();
+                    logger.log(error, req, 'CTC-CPCV');
+                    let err = new ErrorResponseBuilder().errorCode('CTC-CPCV-2').status(500).errorType('UnknownError').build();
                     return next(err);
                 })
     }
@@ -106,7 +109,8 @@ exports.createCategory = (req, res, next) => {
                 return res.status(201).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CTC-CC-1').build();
+                logger.log(error, req, 'CTC-CC');
+                let err = new ErrorResponseBuilder().errorCode('CTC-CC-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -120,7 +124,8 @@ exports.getCategories = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CTC-GC-1').build();
+                logger.log(error, req, 'CTC-GC');
+                let err = new ErrorResponseBuilder().errorCode('CTC-GC-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -151,7 +156,8 @@ exports.editCategory = (req,res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CTC-EC-1').build();
+                logger.log(error, req, 'CTC-EC');
+                let err = new ErrorResponseBuilder().errorCode('CTC-EC-1').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
@@ -162,7 +168,7 @@ exports.deleteCategory = (req, res, next) => {
                 if(result.n <= 0) {
                     let error = new ErrorResponseBuilder('Provided Category Not Found to Delete')
                                         .status(404)
-                                        .errorType('dataValidationError')
+                                        .errorType('ItemNotFoundError')
                                         .errorCode('CTC-DC-1')
                                         .build();
                     return res.status(404).send(error);
@@ -171,7 +177,8 @@ exports.deleteCategory = (req, res, next) => {
                 return res.status(200).send(jsonResponse);
             })
             .catch(error => {
-                let err = new ErrorResponseBuilder().errorCode('CTC-DC-2').build();
+                logger.log(error, req, 'CTC-DC');
+                let err = new ErrorResponseBuilder().errorCode('CTC-DC-2').status(500).errorType('UnknownError').build();
                 return next(err);
             })
 }
